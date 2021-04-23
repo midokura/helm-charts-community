@@ -1,0 +1,17 @@
+apiVersion: v2
+name: librenms
+description: SNMP monitoring for network devices
+
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+version: 0.1.0
+
+# This is the version number of the application being deployed.
+appVersion: "21.4.0"
+
+
+dependencies:
+  - name: mariadb
+    repository: https://charts.bitnami.com/bitnami
+    version: 9.3.7
