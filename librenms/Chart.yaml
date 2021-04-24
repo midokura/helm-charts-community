@@ -15,3 +15,9 @@ dependencies:
   - name: mariadb
     repository: https://charts.bitnami.com/bitnami
     version: 9.3.7
+  - name: memcached
+    repository: https://charts.bitnami.com/bitnami
+    version: 5.10.1
+  - name: redis
+    repository: https://charts.bitnami.com/bitnami
+    version: 14.1.0

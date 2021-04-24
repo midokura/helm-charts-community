@@ -28,18 +28,12 @@ podAnnotations: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-service:
-  type: ClusterIP
-  port: 80
-  targetPort: 8000
+securityContext:
+  capabilities:
+    add:
+      - NET_ADMIN
+      - NET_RAW
+  #runAsUser: 1000
 
 ingress:
   enabled: false
@@ -58,17 +52,15 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
 
 autoscaling:
   enabled: false
@@ -83,10 +75,13 @@ tolerations: []
 
 affinity: {}
 
-db:
-  username: librenms
-  password: librenms
-  name: librenms
+timezone: Europe/Madrid
+
+librenms:
+  db:
+    username: librenms
+    password: librenms
+    name: librenms
 
 mariadb:
   auth:
@@ -96,3 +91,11 @@ mariadb:
     rootPassword: librenms
   volumePermissions:
     enabled: true
+
+redis:
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: false

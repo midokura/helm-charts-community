@@ -60,3 +60,30 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+Define the common environment variables for LibreNMS app
+*/}}
+{{- define "librenms.environment_default" -}}
+- name: DB_HOST
+  value: {{ include "librenms.name" . }}-mariadb
+- name: DB_USER
+  value: {{ .Values.mariadb.auth.username | default "librenms" }}
+- name: DB_PASSWORD
+  value: {{ .Values.mariadb.auth.password | default "librenms" }}
+- name: DB_NAME
+  value: {{ .Values.mariadb.auth.database | default "librenms" }}
+- name: REDIS_HOST
+  value: {{ include "librenms.name" . }}-redis-headless
+- name: REDIS_PORT
+  value: "6379"
+- name: REDIS_DB
+  value: "0"
+- name: MEMCACHED_HOST
+  value: {{ include "librenms.name" . }}-memcached
+- name: MEMCACHED_PORT
+  value: "11211"
+- name: TZ
+  value: {{ .Values.timezone | default "Etc/UTC" }}
+{{- end }}

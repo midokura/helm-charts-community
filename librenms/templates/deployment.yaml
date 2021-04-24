@@ -34,14 +34,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: DB_HOST
-              value: {{ .Values.db.external_host | default "librenms-mariadb" }}
-            - name: DB_USER
-              value: {{ .Values.db.username | default "librenms" }}
-            - name: DB_PASSWORD
-              value: {{ .Values.db.password | default "librenms" }}
-            - name: DB_NAME
-              value: {{ .Values.db.name | default "librenms" }}
+            {{ include "librenms.environment_default" . | nindent 12 }}
           ports:
             - name: http
               containerPort: 8000
@@ -56,6 +49,34 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: librenms-data
+              mountPath: /data
+
+        - name: {{ .Chart.Name -}}-dispatcher
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{ include "librenms.environment_default" . | nindent 12 }}
+            - name: SIDECAR_DISPATCHER
+              value: "1"
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: DISPATCHER_NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: librenms-data
+              mountPath: /data
+      volumes:
+        - name: librenms-data
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
