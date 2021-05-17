@@ -1,0 +1,16 @@
+apiVersion: v2
+name: sshportal
+description: simple, fun and transparent SSH (and telnet) bastion server
+
+type: application
+version: 0.1.0
+appVersion: 1.18.3
+home: https://github.com/moul/sshportal
+sources:
+  - https://github.com/moul/sshportal
+
+dependencies:
+  - name: mariadb
+    alias: mysql
+    version: 9.3.11
+    repository: https://charts.bitnami.com/bitnami

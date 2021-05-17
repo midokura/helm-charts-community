@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sshportal.fullname" . }}
+  labels:
+    {{- include "sshportal.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: ssh
+      nodePort: 32222
+      protocol: TCP
+      name: ssh
+  selector:
+    {{- include "sshportal.selectorLabels" . | nindent 4 }}

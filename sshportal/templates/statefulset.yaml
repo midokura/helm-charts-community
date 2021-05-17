@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "sshportal.fullname" . }}
+  labels:
+    {{- include "sshportal.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "sshportal.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "sshportal.fullname" . }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "sshportal.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "sshportal.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:v{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- if .Values.mysql.enabled }}
+            - name: SSHPORTAL_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "sshportal.fullname" . }}-secrets
+                  key: mysql-connection
+            - name: SSHPORTAL_DB_DRIVER
+              value: mysql
+            {{- else }}
+            - name: SSHPORTAL_DATABASE_URL
+              value: {{ .Values.dbConn | default "/sshportal/db" }}
+            - name: SSHPORTAL_DB_DRIVER
+              value: {{ .Values.dbDriver | default "sqlite3" }}
+            {{- end }}
+            {{- if .Values.debug }}
+            - name: SSHPORTAL_DEBUG
+              value: "1"
+            {{- end }}
+            - name: SSHPORTAL_DEFAULT_ADMIN_INVITE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "sshportal.fullname" . }}-secrets
+                  key: invite-token
+            - name: SSHPORTAL_ACL_CHECK_CMD
+              value: "{{ .Values.aclCheckCmd }}"
+            - name: SSHPORTAL_IDLE_TIMEOUT
+              value: "{{ .Values.idleTimeout | default 0 }}"
+            - name: SSHPORTAL_LOGS_LOCATION
+              value: /sshportal/logs
+          ports:
+            - name: ssh
+              containerPort: 2222
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+                - sshportal
+                - healthcheck
+                - -q
+          livenessProbe:
+            periodSeconds: 5
+            exec:
+              command:
+                - sshportal
+                - healthcheck
+                - -q
+          volumeMounts:
+            - name: sshportal-db
+              mountPath: /sshportal/db
+              subPath: db
+            - name: sshportal-logs
+              mountPath: /sshportal/logs
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: sshportal-db
+        - name: sshportal-logs
+          emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

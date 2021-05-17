@@ -1,0 +1,75 @@
+replicaCount: 1
+
+image:
+  repository: moul/sshportal
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: NodePort
+  port: 2222
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 1
+    memory: 300Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+dbDriver: sqlite3
+dbConn: /sshportal.db
+debug: false
+aesKey: 24
+log: /var/log
+idleTimeout: 0
+aclCheckCmd: ""
+inviteToken: ""
+
+mysql:
+  enabled: false
+  hostname: ""
+  port: 3306
+  auth:
+    username: sshportal
+    password: 
+    database: sshportal
