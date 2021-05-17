@@ -11,5 +11,13 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: 515
+      targetPort: syslog-tcp
+      protocol: TCP
+      name: syslog-tcp
+    - port: 514
+      targetPort: syslog-udp
+      protocol: UDP
+      name: syslog
   selector:
     {{- include "librenms.selectorLabels" . | nindent 4 }}

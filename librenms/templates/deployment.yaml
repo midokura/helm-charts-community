@@ -8,6 +8,7 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       {{- include "librenms.selectorLabels" . | nindent 6 }}
@@ -28,7 +29,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: app
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -53,7 +54,7 @@ spec:
             - name: librenms-data
               mountPath: /data
 
-        - name: {{ .Chart.Name -}}-dispatcher
+        - name: dispatcher
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -70,6 +71,36 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: librenms-data
+              mountPath: /data
+
+        - name: syslog
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{ include "librenms.environment_default" . | nindent 12 }}
+            - name: SIDECAR_SYSLOGNG
+              value: "1"
+          ports:
+            - name: syslog-tcp
+              containerPort: 514
+              protocol: TCP
+            - name: syslog-udp
+              containerPort: 514
+              protocol: UDP
+          livenessProbe:
+            tcpSocket:
+              port: syslog-tcp
+            periodSeconds: 20
+          readinessProbe:
+            tcpSocket:
+              port: syslog-tcp
+            periodSeconds: 20
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
