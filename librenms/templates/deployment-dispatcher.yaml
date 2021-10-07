@@ -51,6 +51,16 @@ spec:
       securityContext:
         {{- toYaml .Values.dispatcher.podSecurityContext | nindent 8 }}
       initContainers:
+        - name: wait-app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - '-c'
+            - >-
+                until nc -z {{ include "librenms.fullname" . }} {{ .Values.app.service.port }}; do
+                  echo waiting for librenms;
+                  sleep 2;
+                done
         - name: init-env
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           command: ['sh', '-c', "touch /data/.env"]
