@@ -109,3 +109,5 @@ redis:
 
 memcached:
   install: true
+
+config: {}

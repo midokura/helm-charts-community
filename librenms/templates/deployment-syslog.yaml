@@ -55,10 +55,15 @@ spec:
           resources:
             {{- toYaml .Values.syslog.resources | nindent 12 }}
           volumeMounts:
-            - name: librenms-data
+            - name: data
               mountPath: /data
+            - name: config
+              mountPath: /opt/librenms/config.d
       volumes:
-        - name: librenms-data
+        - name: data
+        - name: config
+          configMap:
+            name: {{ include "librenms.fullname" . }}-config
       {{- with .Values.syslog.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
