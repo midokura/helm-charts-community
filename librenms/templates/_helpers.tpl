@@ -33,13 +33,32 @@ Create chart name and version as used by the chart label.
 {{/*
 Common labels
 */}}
-{{- define "librenms.labels" -}}
+{{- define "librenms.base.labels" -}}
 helm.sh/chart: {{ include "librenms.chart" . }}
-{{ include "librenms.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{- define "librenms.labels" -}}
+{{ include "librenms.base.labels" . }}
+{{ include "librenms.selectorLabels" . }}
+{{- end }}
+
+{{- define "librenms.app.labels" -}}
+{{ include "librenms.base.labels" . }}
+{{ include "librenms.app.selectorLabels" . }}
+{{- end }}
+
+{{- define "librenms.dispatcher.labels" -}}
+{{ include "librenms.base.labels" . }}
+{{ include "librenms.dispatcher.selectorLabels" . }}
+{{- end }}
+
+{{- define "librenms.syslog.labels" -}}
+{{ include "librenms.base.labels" . }}
+{{ include "librenms.syslog.selectorLabels" . }}
 {{- end }}
 
 {{/*
@@ -48,6 +67,18 @@ Selector labels
 {{- define "librenms.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "librenms.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+{{- define "librenms.app.selectorLabels" -}}
+{{ include "librenms.selectorLabels" . }}
+app.kubernetes.io/component: app
+{{- end }}
+{{- define "librenms.dispatcher.selectorLabels" -}}
+{{ include "librenms.selectorLabels" . }}
+app.kubernetes.io/component: dispatcher
+{{- end }}
+{{- define "librenms.syslog.selectorLabels" -}}
+{{ include "librenms.selectorLabels" . }}
+app.kubernetes.io/component: syslog
 {{- end }}
 
 {{/*
@@ -67,23 +98,31 @@ Define the common environment variables for LibreNMS app
 */}}
 {{- define "librenms.environment_default" -}}
 - name: DB_HOST
-  value: {{ include "librenms.name" . }}-mariadb
+  value: {{ include "librenms.name" . }}-mysql
 - name: DB_USER
-  value: {{ .Values.mariadb.auth.username | default "librenms" }}
+  value: {{ .Values.mysql.auth.username | default "librenms" }}
 - name: DB_PASSWORD
-  value: {{ .Values.mariadb.auth.password | default "librenms" }}
+  value: {{ .Values.mysql.auth.password | default "librenms" }}
 - name: DB_NAME
-  value: {{ .Values.mariadb.auth.database | default "librenms" }}
+  value: {{ .Values.mysql.auth.database | default "librenms" }}
+{{- if .Values.redis.install }}
 - name: REDIS_HOST
   value: {{ include "librenms.name" . }}-redis-headless
+{{- if and .Values.redis.auth .Values.redis.auth.enabled }}
+- name: REDIS_PASSWORD
+  value: {{ required "Missing Values.redis.auth.password" .Values.redis.auth.password }}
+{{- end }}
 - name: REDIS_PORT
   value: "6379"
 - name: REDIS_DB
-  value: "0"
+  value: {{ default "0" .Values.redis.database | quote }}
+{{- end }}
+{{- if .Values.memcached.install }}
 - name: MEMCACHED_HOST
   value: {{ include "librenms.name" . }}-memcached
 - name: MEMCACHED_PORT
   value: "11211"
+{{- end }}
 - name: TZ
   value: {{ .Values.timezone | default "Etc/UTC" }}
 {{- end }}

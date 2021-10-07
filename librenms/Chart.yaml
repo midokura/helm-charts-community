@@ -1,23 +1,26 @@
 apiVersion: v2
 name: librenms
+type: application
 description: SNMP monitoring for network devices
 
-type: application
-
-# This is the chart version. This version number should be incremented each time you make changes
-version: 0.1.0
-
-# This is the version number of the application being deployed.
-appVersion: "21.4.0"
-
+version: 0.1.1
+appVersion: "21.9.1"
 
 dependencies:
   - name: mariadb
+    alias: mysql
     repository: https://charts.bitnami.com/bitnami
-    version: 9.3.7
+    version: 9.6.1
+    condition: mysql.install
   - name: memcached
     repository: https://charts.bitnami.com/bitnami
-    version: 5.10.1
+    version: 5.15.5
+    condition: memcached.install
+    tags:
+      - distributed-poller
   - name: redis
     repository: https://charts.bitnami.com/bitnami
-    version: 14.1.0
+    version: 15.4.1
+    condition: redis.install
+    tags:
+      - distributed-poller
