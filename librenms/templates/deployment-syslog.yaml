@@ -32,8 +32,9 @@ spec:
             {{- toYaml .Values.syslog.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            {{ include "librenms.environment_ref_default" . | nindent 12 }}
           env:
-            {{ include "librenms.environment_default" . | nindent 12 }}
             - name: SIDECAR_SYSLOGNG
               value: "1"
           ports:

@@ -96,33 +96,9 @@ Create the name of the service account to use
 {{/*
 Define the common environment variables for LibreNMS app
 */}}
-{{- define "librenms.environment_default" -}}
-- name: DB_HOST
-  value: {{ include "librenms.name" . }}-mysql
-- name: DB_USER
-  value: {{ .Values.mysql.auth.username | default "librenms" }}
-- name: DB_PASSWORD
-  value: {{ .Values.mysql.auth.password | default "librenms" }}
-- name: DB_NAME
-  value: {{ .Values.mysql.auth.database | default "librenms" }}
-{{- if .Values.redis.install }}
-- name: REDIS_HOST
-  value: {{ include "librenms.name" . }}-redis-headless
-{{- if and .Values.redis.auth .Values.redis.auth.enabled }}
-- name: REDIS_PASSWORD
-  value: {{ required "Missing Values.redis.auth.password" .Values.redis.auth.password }}
-{{- end }}
-- name: REDIS_PORT
-  value: "6379"
-- name: REDIS_DB
-  value: {{ default "0" .Values.redis.database | quote }}
-{{- end }}
-{{- if .Values.memcached.install }}
-- name: MEMCACHED_HOST
-  value: {{ include "librenms.name" . }}-memcached
-- name: MEMCACHED_PORT
-  value: "11211"
-{{- end }}
-- name: TZ
-  value: {{ .Values.timezone | default "Etc/UTC" }}
+{{- define "librenms.environment_ref_default" -}}
+- secretRef:
+    name: {{ include "librenms.fullname" . }}-env
+- configMapRef:
+    name: {{ include "librenms.fullname" . }}-env
 {{- end }}

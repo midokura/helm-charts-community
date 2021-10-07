@@ -32,8 +32,8 @@ spec:
             {{- toYaml .Values.app.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            {{ include "librenms.environment_default" . | nindent 12 }}
+          envFrom:
+            {{ include "librenms.environment_ref_default" . | nindent 12 }}
           ports:
             - name: http
               containerPort: 8000
