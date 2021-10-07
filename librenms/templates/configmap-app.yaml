@@ -9,6 +9,7 @@ data:
     <?php
     $config["own_hostname"] = '{{ include "librenms.fullname" . }}';
     $config["distributed_poller"] = {{ gt (.Values.dispatcher.replicaCount | int) 0 | ternary "true" "false" }};
+    $config["rrdcached"] = '{{ include "librenms.fullname" . }}-rrdcached:{{ .Values.rrdcached.service.port }}';
     {{- if .Values.memcached.install }}
     $config["distributed_poller_memcached_host"] = '{{ include "librenms.fullname" . }}-memcached';
     $config["distributed_poller_memcached_port"] = 11211;

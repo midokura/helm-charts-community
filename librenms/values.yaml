@@ -87,6 +87,23 @@ syslog:
       udp: 514
   resources: {}
 
+rrdcached:
+  image:
+    repository: crazymax/rrdcached
+    tag: "1.7.2-r4"
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  service:
+    type: ClusterIP
+    port: 42217
+  resources: {}
+
 mysql:
   install: true
   auth:

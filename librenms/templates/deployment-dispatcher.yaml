@@ -63,7 +63,9 @@ spec:
                 done
         - name: init-env
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          command: ['sh', '-c', "touch /data/.env"]
+          command: ['sh', '-c', "echo NODE_ID=$NODE_ID > /data/.env"]
+          env:
+            {{- include "librenms.dispatcher_env" . | nindent 12 }}
           volumeMounts:
             - name: data
               mountPath: /data
@@ -74,9 +76,9 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
-            {{ include "librenms.environment_ref_default" . | nindent 12 }}
+            {{- include "librenms.environment_ref_default" . | nindent 12 }}
           env:
-            {{ include "librenms.dispatcher_env" . | nindent 12 }}
+            {{- include "librenms.dispatcher_env" . | nindent 12 }}
           resources:
             {{- toYaml .Values.dispatcher.resources | nindent 12 }}
           volumeMounts:

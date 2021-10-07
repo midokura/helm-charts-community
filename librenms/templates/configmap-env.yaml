@@ -18,3 +18,4 @@ data:
   MEMCACHED_HOST: {{ include "librenms.name" . }}-memcached
   MEMCACHED_PORT: "11211"
 {{- end }}
+  RRDCACHED_SERVER: {{ include "librenms.name" . }}-rrdcached:{{ .Values.rrdcached.service.port }}

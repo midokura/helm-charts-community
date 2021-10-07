@@ -61,6 +61,11 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{ include "librenms.syslog.selectorLabels" . }}
 {{- end }}
 
+{{- define "librenms.rrdcached.labels" -}}
+{{ include "librenms.base.labels" . }}
+{{ include "librenms.rrdcached.selectorLabels" . }}
+{{- end }}
+
 {{/*
 Selector labels
 */}}
@@ -79,6 +84,10 @@ app.kubernetes.io/component: dispatcher
 {{- define "librenms.syslog.selectorLabels" -}}
 {{ include "librenms.selectorLabels" . }}
 app.kubernetes.io/component: syslog
+{{- end }}
+{{- define "librenms.rrdcached.selectorLabels" -}}
+{{ include "librenms.selectorLabels" . }}
+app.kubernetes.io/component: rrdcached
 {{- end }}
 
 {{/*

@@ -3,7 +3,7 @@ name: librenms
 type: application
 description: SNMP monitoring for network devices
 
-version: 0.1.1
+version: 0.1.2
 appVersion: "21.9.1"
 
 dependencies:
