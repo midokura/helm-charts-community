@@ -63,7 +63,13 @@ spec:
                 done
         - name: init-env
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          command: ['sh', '-c', "echo NODE_ID=$NODE_ID > /data/.env"]
+          command:
+            - sh
+            - '-c'
+            - |
+                export | cut -d' ' -f2 | tr -d "'"  > /data/.env
+          envFrom:
+            {{- include "librenms.environment_ref_default" . | nindent 12 }}
           env:
             {{- include "librenms.dispatcher_env" . | nindent 12 }}
           volumeMounts:

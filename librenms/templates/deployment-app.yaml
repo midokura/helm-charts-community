@@ -26,6 +26,21 @@ spec:
       serviceAccountName: {{ include "librenms.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.app.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-env
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - '-c'
+            - |
+                export | cut -d' ' -f2 | tr -d "'"  > /data/.env
+          envFrom:
+            {{- include "librenms.environment_ref_default" . | nindent 12 }}
+          env:
+            {{- include "librenms.dispatcher_env" . | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
       containers:
         - name: app
           securityContext:
