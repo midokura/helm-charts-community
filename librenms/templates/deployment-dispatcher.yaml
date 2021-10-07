@@ -32,7 +32,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "librenms.dispatcher.selectorLabels" . | nindent 8 }}
+        {{- include "librenms.dispatcher.labels" . | nindent 8 }}
     spec:
       {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
       topologySpreadConstraints:
