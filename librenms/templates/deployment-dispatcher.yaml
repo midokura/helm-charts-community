@@ -1,3 +1,18 @@
+{{- define "librenms.dispatcher_env" }}
+- name: SIDECAR_DISPATCHER
+  value: "1"
+- name: NODE_ID
+  valueFrom:
+    fieldRef:
+      fieldPath: metadata.name
+- name: DISPATCHER_NODE_ID
+  valueFrom:
+    fieldRef:
+      fieldPath: metadata.name
+- name: CACHE_DRIVER
+  value: "redis"
+{{- end }}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,6 +34,15 @@ spec:
       labels:
         {{- include "librenms.dispatcher.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              {{- include "librenms.dispatcher.selectorLabels" . | nindent 14 }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -26,6 +50,16 @@ spec:
       serviceAccountName: {{ include "librenms.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.dispatcher.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-env
+          image: busybox:1.33
+          command: ['sh', '-c', "export > /data/.env"]
+          env:
+            {{ include "librenms.environment_default" . | nindent 12 }}
+            {{ include "librenms.dispatcher_env" . | nindent 12 }}
+          volumeMounts:
+            - name: librenms-data
+              mountPath: /data
       containers:
         - name: dispatcher
           securityContext:
@@ -34,18 +68,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             {{ include "librenms.environment_default" . | nindent 12 }}
-            - name: SIDECAR_DISPATCHER
-              value: "1"
-            - name: NODE_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: DISPATCHER_NODE_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: CACHE_DRIVER
-              value: "redis"
+            {{ include "librenms.dispatcher_env" . | nindent 12 }}
           resources:
             {{- toYaml .Values.dispatcher.resources | nindent 12 }}
           volumeMounts:
