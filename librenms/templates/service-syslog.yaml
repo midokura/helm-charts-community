@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "librenms.fullname" . }}-syslog
   labels:
-    {{- include "librenms.labels" . | nindent 4 }}
+    {{- include "librenms.syslog.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.syslog.service.type }}
   ports:
@@ -16,4 +16,4 @@ spec:
       targetPort: syslog-udp
       protocol: UDP
   selector:
-    {{- include "librenms.selectorLabels" . | nindent 4 }}
+    {{- include "librenms.syslog.selectorLabels" . | nindent 4 }}
