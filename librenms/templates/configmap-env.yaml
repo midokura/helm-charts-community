@@ -6,7 +6,7 @@ metadata:
     {{- include "librenms.labels" . | nindent 4 }}
 data:
   TZ: {{ .Values.timezone | default "Etc/UTC" }}
-  PUID: {{ default 1000 .Values.app.podSecurityContext.runAsUser | quote }}
+  PUID: {{ default 1000 .Values.app.podSecurityContext.fsGroup | quote }}
   PGID: {{ default 1000 .Values.app.podSecurityContext.runAsGroup | quote }}
   DB_HOST: {{ include "librenms.name" . }}-mysql
   DB_USER: {{ .Values.mysql.auth.username | default "librenms" }}
