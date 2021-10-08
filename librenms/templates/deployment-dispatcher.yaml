@@ -10,7 +10,7 @@
     fieldRef:
       fieldPath: metadata.name
 - name: CACHE_DRIVER
-  value: "redis"
+  value: {{ default "redis" .Values.dispatcher.cacheDriver | quote }}
 {{- end }}
 
 apiVersion: apps/v1

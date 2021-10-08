@@ -67,6 +67,7 @@ app:
 
 dispatcher:
   replicaCount: 1
+  cacheDriver: redis
   nodeSelector: {}
   tolerations: []
   affinity: {}
