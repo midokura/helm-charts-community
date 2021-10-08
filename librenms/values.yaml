@@ -60,8 +60,9 @@ app:
 
   resources:
     limits:
-      cpu: 1
       memory: 1Gi
+    requests:
+      memory: 200Mi
 
   persistence:
     enabled: true
@@ -137,5 +138,10 @@ redis:
 
 memcached:
   install: true
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      memory: 10Mi
 
 config: {}
