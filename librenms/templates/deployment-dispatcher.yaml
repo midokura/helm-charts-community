@@ -87,6 +87,15 @@ spec:
             {{- include "librenms.dispatcher_env" . | nindent 12 }}
           resources:
             {{- toYaml .Values.dispatcher.resources | nindent 12 }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - '-c'
+                  - >
+                      mysql -h ${DB_HOST} -u ${DB_USER} --password=${DB_PASSWORD} ${DB_NAME} -e
+                      "DELETE FROM poller_cluster WHERE node_id = '${DISPATCHER_NODE_ID}';"
           volumeMounts:
             - name: data
               mountPath: /data
