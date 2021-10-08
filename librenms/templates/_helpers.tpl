@@ -51,9 +51,9 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{ include "librenms.app.selectorLabels" . }}
 {{- end }}
 
-{{- define "librenms.dispatcher.labels" -}}
+{{- define "librenms.poller.labels" -}}
 {{ include "librenms.base.labels" . }}
-{{ include "librenms.dispatcher.selectorLabels" . }}
+{{ include "librenms.poller.selectorLabels" . }}
 {{- end }}
 
 {{- define "librenms.syslog.labels" -}}
@@ -77,9 +77,9 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{ include "librenms.selectorLabels" . }}
 app.kubernetes.io/component: app
 {{- end }}
-{{- define "librenms.dispatcher.selectorLabels" -}}
+{{- define "librenms.poller.selectorLabels" -}}
 {{ include "librenms.selectorLabels" . }}
-app.kubernetes.io/component: dispatcher
+app.kubernetes.io/component: poller
 {{- end }}
 {{- define "librenms.syslog.selectorLabels" -}}
 {{ include "librenms.selectorLabels" . }}

@@ -10,29 +10,29 @@
     fieldRef:
       fieldPath: metadata.name
 - name: CACHE_DRIVER
-  value: {{ default "redis" .Values.dispatcher.cacheDriver | quote }}
+  value: {{ default "redis" .Values.poller.cacheDriver | quote }}
 {{- end }}
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "librenms.fullname" . }}-dispatcher
+  name: {{ include "librenms.fullname" . }}-poller
   labels:
-    {{- include "librenms.dispatcher.labels" . | nindent 4 }}
+    {{- include "librenms.poller.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.dispatcher.replicaCount }}
+  replicas: {{ .Values.poller.replicaCount }}
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      {{- include "librenms.dispatcher.selectorLabels" . | nindent 6 }}
+      {{- include "librenms.poller.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.dispatcher.podAnnotations }}
+      {{- with .Values.poller.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "librenms.dispatcher.labels" . | nindent 8 }}
+        {{- include "librenms.poller.labels" . | nindent 8 }}
     spec:
       {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
       topologySpreadConstraints:
@@ -41,7 +41,7 @@ spec:
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
-              {{- include "librenms.dispatcher.selectorLabels" . | nindent 14 }}
+              {{- include "librenms.poller.selectorLabels" . | nindent 14 }}
       {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -49,7 +49,7 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "librenms.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.dispatcher.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.poller.podSecurityContext | nindent 8 }}
       initContainers:
         - name: wait-app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -76,9 +76,9 @@ spec:
             - name: data
               mountPath: /data
       containers:
-        - name: dispatcher
+        - name: poller
           securityContext:
-            {{- toYaml .Values.dispatcher.securityContext | nindent 12 }}
+            {{- toYaml .Values.poller.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
@@ -86,7 +86,7 @@ spec:
           env:
             {{- include "librenms.dispatcher_env" . | nindent 12 }}
           resources:
-            {{- toYaml .Values.dispatcher.resources | nindent 12 }}
+            {{- toYaml .Values.poller.resources | nindent 12 }}
           lifecycle:
             preStop:
               exec:
@@ -107,15 +107,15 @@ spec:
         - name: config
           configMap:
             name: {{ include "librenms.fullname" . }}-config
-      {{- with .Values.dispatcher.nodeSelector }}
+      {{- with .Values.poller.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.dispatcher.affinity }}
+      {{- with .Values.poller.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.dispatcher.tolerations }}
+      {{- with .Values.poller.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

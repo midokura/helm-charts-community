@@ -63,7 +63,7 @@ app:
       cpu: 1
       memory: 1Gi
 
-dispatcher:
+poller:
   replicaCount: 1
   cacheDriver: redis
   nodeSelector: {}
