@@ -12,6 +12,7 @@ data:
     $config["distributed_poller"] = {{ gt (.Values.dispatcher.replicaCount | int) 0 | ternary "true" "false" }};
     $config["distributed_poller_group"] = 0;
     $config["rrdcached"] = '{{ include "librenms.fullname" . }}-rrdcached:{{ .Values.rrdcached.service.port }}';
+    $config['rrdtool_version'] = '1.7.2';
     {{- if .Values.memcached.install }}
     $config["distributed_poller_memcached_host"] = '{{ include "librenms.fullname" . }}-memcached';
     $config["distributed_poller_memcached_port"] = 11211;

@@ -50,7 +50,10 @@ app:
   tolerations: []
   affinity: {}
   podAnnotations: {}
-  podSecurityContext: {}
+  podSecurityContext:
+    fsGroup: 1000
+    runAsUser: 1000
+    runAsGroup: 1000
   securityContext: *defaultSecurityContext
 
   service:
@@ -92,13 +95,8 @@ rrdcached:
     repository: crazymax/rrdcached
     tag: "1.7.2-r4"
     pullPolicy: IfNotPresent
-  replicaCount: 1
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-  podAnnotations: {}
-  podSecurityContext: {}
-  securityContext: {}
+  securityContext:
+    allowPrivilegeEscalation: false
   service:
     type: ClusterIP
     port: 42217

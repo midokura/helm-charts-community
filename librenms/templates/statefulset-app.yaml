@@ -1,11 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "librenms.fullname" . }}
   labels:
     {{- include "librenms.app.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.app.replicaCount }}
+  serviceName: {{ include "librenms.fullname" . }}
   revisionHistoryLimit: 3
   selector:
     matchLabels:
@@ -63,13 +64,42 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: rrd-db
+              mountPath: /opt/librenms/rrd
+            - name: rrd-journal
+              mountPath: /var/lib/rrdcached/journal
             - name: config
               mountPath: /opt/librenms/config.d
+        - name: rrdcached
+          securityContext:
+            {{- toYaml .Values.rrdcached.securityContext | nindent 12 }}
+          image: {{ .Values.rrdcached.image.repository }}:{{ .Values.rrdcached.image.tag | default "latest" }}
+          imagePullPolicy: {{ .Values.rrdcached.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "librenms.fullname" . }}-rrdcached
+          ports:
+            - name: rrd
+              containerPort: 42217
+              protocol: TCP
+          livenessProbe: &rrd_tcpProbe
+            tcpSocket:
+              port: rrd
+          readinessProbe: *rrd_tcpProbe
+          resources:
+            {{- toYaml .Values.rrdcached.resources | nindent 12 }}
+          volumeMounts:
+            - name: rrd-db
+              mountPath: /data/db
+            - name: rrd-journal
+              mountPath: /data/journal
       volumes:
         - name: data
         - name: config
           configMap:
             name: {{ include "librenms.fullname" . }}-config
+        - name: rrd-db
+        - name: rrd-journal
       {{- with .Values.app.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -7,6 +7,7 @@ metadata:
 data:
   TZ: {{ .Values.timezone | default "Etc/UTC" }}
   LOG_LEVEL: "LOG_INFO"
-  WRITE_TIMEOUT: "300"
+  WRITE_TIMEOUT: "1800"
+  WRITE_JITTER: "900"
   WRITE_THREADS: "4"
   FLUSH_DEAD_DATA_INTERVAL: "3600"

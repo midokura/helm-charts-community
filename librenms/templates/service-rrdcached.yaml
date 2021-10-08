@@ -3,16 +3,15 @@ kind: Service
 metadata:
   name: {{ include "librenms.fullname" . }}-rrdcached
   labels:
-    {{- include "librenms.rrdcached.labels" . | nindent 4 }}
+    {{- include "librenms.app.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.rrdcached.service.type }}
-  {{- if eq .Values.rrdcached.service.type "ClusterIP" }}
+  type: {{ .Values.app.service.type }}
+  {{- if eq .Values.app.service.type "ClusterIP" }}
   clusterIP: None
   {{- end }}
   ports:
     - name: rrd
-      port: {{ .Values.rrdcached.service.port }}
-      targetPort: rrd
+      port: 42217
       protocol: TCP
   selector:
-    {{- include "librenms.rrdcached.selectorLabels" . | nindent 4 }}
+    {{- include "librenms.app.selectorLabels" . | nindent 4 }}
