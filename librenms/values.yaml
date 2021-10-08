@@ -63,6 +63,16 @@ app:
       cpu: 1
       memory: 1Gi
 
+  persistence:
+    enabled: true
+    size: 4Gi
+    existingClaim: null
+    storageClass: ""
+    annotations: {}
+    accessModes:
+      #- ReadWriteMany
+      - ReadWriteOnce
+
 poller:
   replicaCount: 1
   cacheDriver: redis
@@ -110,6 +120,10 @@ mysql:
     rootPassword: librenms
   volumePermissions:
     enabled: true
+  primary:
+    persistence:
+      enabled: true
+      size: 2Gi
 
 redis:
   install: true

@@ -64,8 +64,6 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-            - name: rrd-db
-              mountPath: /opt/librenms/rrd
             - name: rrd-journal
               mountPath: /var/lib/rrdcached/journal
             - name: config
@@ -89,17 +87,12 @@ spec:
           resources:
             {{- toYaml .Values.rrdcached.resources | nindent 12 }}
           volumeMounts:
-            - name: rrd-db
+            - name: data
               mountPath: /data/db
+              subPath: rrd
             - name: rrd-journal
               mountPath: /data/journal
-      volumes:
-        - name: data
-        - name: config
-          configMap:
-            name: {{ include "librenms.fullname" . }}-config
-        - name: rrd-db
-        - name: rrd-journal
+
       {{- with .Values.app.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -112,3 +105,40 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "librenms.fullname" . }}-config
+        - name: rrd-journal
+          emptyDir: {}
+        {{- if and .Values.app.persistence.enabled .Values.app.persistence.existingClaim }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.app.persistence.existingClaim . }}
+        {{- else if not .Values.app.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+  {{- else if and .Values.app.persistence.enabled (not .Values.app.persistence.existingClaim) }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          {{ include "librenms.app.labels" . | nindent 10 }}
+        {{- if .Values.app.persistence.annotations }}
+        annotations:
+          {{- toYaml .Values.app.persistence.annotations | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          {{- range .Values.app.persistence.accessModes }}
+          - {{ . | quote }}
+          {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.app.persistence.size | quote }}
+        storageClass: {{ .Values.app.persistence.storageClass }}
+        {{- if .Values.app.persistence.selector }}
+        selector:
+          {{- toYaml .Values.app.persistence.selector | nindent 10 }}
+        {{- end }}
+  {{- end }}
