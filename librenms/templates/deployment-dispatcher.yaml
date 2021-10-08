@@ -91,7 +91,8 @@ spec:
             - name: data
               mountPath: /data
             - name: config
-              mountPath: /opt/librenms/config.d
+              mountPath: /opt/librenms/config.php
+              subPath: config.php
       volumes:
         - name: data
         - name: config
