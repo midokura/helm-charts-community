@@ -2,8 +2,21 @@ apiVersion: v2
 name: librenms
 type: application
 description: SNMP monitoring for network devices
+keywords:
+  - nms
+  - network
+  - snmp
+  - monitoring
+home: https://github.com/midokura/helm-charts-community/tree/main/librenms
+icon: https://www.librenms.org/images/android-chrome-192x192.png
+sources:
+  - https://github.com/librenms/docker
+  - https://github.com/crazy-max/docker-rrdcached
+maintainers:
+  - name: David Girón
+    url: https://github.com/duhow
 
-version: 0.1.2
+version: 0.1.3
 appVersion: "21.9.1"
 
 dependencies:

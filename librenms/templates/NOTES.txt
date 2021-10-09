@@ -1,11 +1,10 @@
-1. Get the application URL by running these commands:
 {{- if .Values.ingress.enabled }}
-{{- range $host := .Values.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
-  {{- end }}
+Congratulations! You can now access to LibreNMS with the following address:
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .Values.ingress.hostname }}
+{{- else }}
+1. Get the application URL by running these commands:
 {{- end }}
-{{- else if contains "NodePort" .Values.app.service.type }}
+{{- if contains "NodePort" .Values.app.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "librenms.fullname" . }})
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   echo http://$NODE_IP:$NODE_PORT
@@ -14,9 +13,11 @@
            You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "librenms.fullname" . }}'
   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "librenms.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
   echo http://$SERVICE_IP:{{ .Values.app.service.port }}
-{{- else if contains "ClusterIP" .Values.app.service.type }}
+{{- else if and (contains "ClusterIP" .Values.app.service.type) (not .Values.ingress.enabled) }}
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "librenms.name" . }},app.kubernetes.io/component=app,app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
   export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
   echo "Visit http://127.0.0.1:8080 to use your application"
   kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
 {{- end }}
+
+Default credentials are librenms / librenms . Be sure to change them!
