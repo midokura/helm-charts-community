@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "librenms.fullname" . }}-syslog
+  labels:
+    {{- include "librenms.syslog.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.syslog.service.type }}
+  ports:
+    - name: syslog-tcp
+      port: {{ .Values.syslog.service.ports.tcp }}
+      targetPort: syslog-tcp
+      protocol: TCP
+    - name: syslog
+      port: {{ .Values.syslog.service.ports.udp }}
+      targetPort: syslog-udp
+      protocol: UDP
+  selector:
+    {{- include "librenms.syslog.selectorLabels" . | nindent 4 }}

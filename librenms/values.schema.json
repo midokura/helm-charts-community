@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "image": {
+      "type": "object",
+      "title": "LibreNMS base image",
+      "form": true,
+      "properties": {
+        "repository": {
+          "type": "string",
+          "title": "Repository for the image",
+          "form": true
+        },
+        "tag": {
+          "type": "string",
+          "title": "Tag image value",
+          "form": true
+        }
+      }
+    },
+    "timezone": {
+      "type": "string",
+      "title": "Time zone to use",
+      "form": true
+    },
+    "app": {
+      "type": "object",
+      "title": "LibreNMS application deployment settings",
+      "form": true,
+      "properties": {
+        "key": {
+          "type": ["string", "null"],
+          "title": "Application Secret Key",
+          "description": "Set a custom APP_KEY value. Generates a random one by default.",
+          "form": true
+        },
+        "replicaCount": {
+          "type": "number",
+          "maximum": 1,
+          "title": "Replica count",
+          "description": "Amount of replicas to launch. Since RRD and WebUI are bundled, need to be 1 at the moment.",
+          "form": false
+        }
+      }
+    },
+    "poller": {
+      "type": "object",
+      "title": "LibreNMS distributed poller deployment settings",
+      "form": true,
+      "properties": {
+        "cacheDriver": {
+          "type": "string",
+          "title": "Cache driver",
+          "pattern": "^(redis|memcached)$",
+          "description": "Select service to use to perform poll locking. Defaults to redis.",
+          "form": true
+        },
+        "replicaCount": {
+          "type": "number",
+          "title": "Replica count",
+          "description": "Amount of replicas to launch.",
+          "form": true
+        }
+      }
+    },
+    "syslog": {
+      "type": "object",
+      "title": "LibreNMS syslog deployment settings",
+      "form": true,
+      "properties": {
+        "replicaCount": {
+          "type": "number",
+          "title": "Replica count",
+          "description": "Amount of replicas to launch.",
+          "form": true
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "title": "LibreNMS Ingress settings",
+      "form": true,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "title": "Enable Ingress",
+          "form": true
+        },
+        "tls": {
+          "type": "boolean",
+          "title": "Enable TLS generation",
+          "form": true
+        },
+        "hostname": {
+          "type": "string",
+          "title": "Ingress Hostname",
+          "form": true
+        },
+        "ingressClassName": {
+          "type": "string",
+          "title": "IngressClass to apply",
+          "description": "Defaults to nginx.",
+          "form": true
+        },
+        "annotations": {
+          "type": "object",
+          "title": "Annotations",
+          "description": "Place your annotations here for cert-manager, custom settings, etc.",
+          "form": true
+        }
+      }
+    },
+    "config": {
+      "type": "object",
+      "title": "LibreNMS config",
+      "description": "Dictionary of key-values for settings to apply.",
+      "form": true
+    }
+  }
+}

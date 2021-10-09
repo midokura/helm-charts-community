@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "librenms.fullname" . }}-env
+  labels:
+    {{- include "librenms.labels" . | nindent 4 }}
+data:
+  TZ: {{ .Values.timezone | default "Etc/UTC" }}
+  PUID: {{ default 1000 .Values.app.podSecurityContext.fsGroup | quote }}
+  PGID: {{ default 1000 .Values.app.podSecurityContext.runAsGroup | quote }}
+  DB_HOST: {{ include "librenms.name" . }}-mysql
+  DB_USER: {{ .Values.mysql.auth.username | default "librenms" }}
+  DB_NAME: {{ .Values.mysql.auth.database | default "librenms" }}
+{{- if .Values.redis.install }}
+  REDIS_HOST: {{ include "librenms.name" . }}-redis-headless
+  REDIS_PORT: "6379"
+  REDIS_DB: {{ default "0" .Values.redis.database | quote }}
+{{- end }}
+{{- if .Values.memcached.install }}
+  MEMCACHED_HOST: {{ include "librenms.name" . }}-memcached
+  MEMCACHED_PORT: "11211"
+{{- end }}
+  RRDCACHED_SERVER: {{ include "librenms.name" . }}-rrdcached:{{ .Values.rrdcached.service.port }}

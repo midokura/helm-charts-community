@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "librenms.fullname" . }}-config
+  labels:
+    {{- include "librenms.labels" . | nindent 4 }}
+data:
+  config.php: |
+    <?php
+    $config["own_hostname"] = '{{ include "librenms.fullname" . }}';
+    $config["base_url"] = '/';
+    $config["rrdcached"] = '{{ include "librenms.fullname" . }}-rrdcached:{{ .Values.rrdcached.service.port }}';
+    $config['rrdtool_version'] = '1.7.2';
+    $config["rrd_dir"] = '/data/rrd';
+    $config["distributed_poller"] = {{ gt (.Values.poller.replicaCount | int) 0 | ternary "true" "false" }};
+    $config["enable_syslog"] = {{ gt (.Values.syslog.replicaCount | int) 0 | ternary "true" "false" }};
+    if (strpos(php_uname('n'), '-poller-') !== false) {
+      $config["distributed_poller_name"] = php_uname('n');
+      $config["distributed_poller_group"] = '0';
+      {{- if .Values.memcached.install }}
+      $config["distributed_poller_memcached_host"] = '{{ include "librenms.fullname" . }}-memcached';
+      $config["distributed_poller_memcached_port"] = 11211;
+      {{- end }}
+    }
+
+    {{- if .Values.config }}
+    {{- if hasKey .Values.config "nets" }}
+    {{- range .Values.config.nets }}
+    $config["nets"][] = "{{ . }}";
+    {{- end }}
+    {{- end }}
+
+    {{- if hasKey .Values.config "snmp" }}
+    {{- if hasKey .Values.config.snmp "community" }}
+    {{- range .Values.config.snmp.community }}
+    $config["snmp"]["community"][] = "{{ . }}";
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    {{- range tuple "distributed_poller" "distributed_poller_name" "distributed_poller_group" "distributed_poller_memcached_host" "distributed_poller_memcached_port" "rrdcached"
+       "ping_rrd_step" "base_url" "user" "site_style" "page_refresh" "front_page" "login_message" "public_status" "enable_lazy_load" "overview_show_sysDescr" "force_ip_to_sysname"
+       "force_hostname_to_sysname" "enable_clear_discovery" "enable_footer" "percentile_value" "shorthost_target_length" "addhost_alwayscheckip" "allow_duplicate_sysName"
+       "email_backend" "email_from" "email_user" "email_smtp_host" "email_smtp_port" "email_smtp_timeout" "email_smtp_secure" "email_smtp_auth" "email_smtp_username" "email_smtp_password"
+       "enable_bgp" "enable_syslog" "enable_inventory" "enable_pseudowires" "enable_vrfs" "enable_ports_etherlike" "enable_ports_junoseatmvp" "enable_ports_adsl" "enable_ports_poe"
+       "enable_billing" "show_services" "default_port_group" "ignore_mount_removable" "ignore_mount_network" "ignore_mount_optical" "storage_perc_warn" "update" "rrd_purge"
+    }}
+    {{- if hasKey $.Values.config . }}
+    $config["{{ . }}"] = {{ get $.Values.config . }};
+    {{- end }}
+    {{- end }}
+    {{- end }}

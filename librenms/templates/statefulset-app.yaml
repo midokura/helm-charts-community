@@ -1,0 +1,144 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "librenms.fullname" . }}
+  labels:
+    {{- include "librenms.app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  serviceName: {{ include "librenms.fullname" . }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      {{- include "librenms.app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.app.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "librenms.app.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "librenms.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.app.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-env
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - '-c'
+            - |
+                export | cut -d' ' -f2 | tr -d "'"  > /data/.env
+          envFrom:
+            {{- include "librenms.environment_ref_default" . | nindent 12 }}
+          env:
+            {{- include "librenms.dispatcher_env" . | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      containers:
+        - name: app
+          securityContext:
+            {{- toYaml .Values.app.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            {{ include "librenms.environment_ref_default" . | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          livenessProbe: &app_httpProbe
+            httpGet:
+              path: /login
+              port: http
+          readinessProbe: *app_httpProbe
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: rrd-journal
+              mountPath: /var/lib/rrdcached/journal
+            - name: config
+              mountPath: /opt/librenms/config.d
+        - name: rrdcached
+          securityContext:
+            {{- toYaml .Values.rrdcached.securityContext | nindent 12 }}
+          image: {{ .Values.rrdcached.image.repository }}:{{ .Values.rrdcached.image.tag | default "latest" }}
+          imagePullPolicy: {{ .Values.rrdcached.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "librenms.fullname" . }}-rrdcached
+          ports:
+            - name: rrd
+              containerPort: 42217
+              protocol: TCP
+          livenessProbe: &rrd_tcpProbe
+            tcpSocket:
+              port: rrd
+          readinessProbe: *rrd_tcpProbe
+          resources:
+            {{- toYaml .Values.rrdcached.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data/db
+              subPath: rrd
+            - name: rrd-journal
+              mountPath: /data/journal
+
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "librenms.fullname" . }}-config
+        - name: rrd-journal
+          emptyDir: {}
+        {{- if and .Values.app.persistence.enabled .Values.app.persistence.existingClaim }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.app.persistence.existingClaim . }}
+        {{- else if not .Values.app.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+  {{- else if and .Values.app.persistence.enabled (not .Values.app.persistence.existingClaim) }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          {{ include "librenms.app.labels" . | nindent 10 }}
+        {{- if .Values.app.persistence.annotations }}
+        annotations:
+          {{- toYaml .Values.app.persistence.annotations | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          {{- range .Values.app.persistence.accessModes }}
+          - {{ . | quote }}
+          {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.app.persistence.size | quote }}
+        storageClass: {{ .Values.app.persistence.storageClass }}
+        {{- if .Values.app.persistence.selector }}
+        selector:
+          {{- toYaml .Values.app.persistence.selector | nindent 10 }}
+        {{- end }}
+  {{- end }}

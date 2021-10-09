@@ -1,0 +1,121 @@
+{{- define "librenms.dispatcher_env" }}
+- name: SIDECAR_DISPATCHER
+  value: "1"
+- name: NODE_ID
+  valueFrom:
+    fieldRef:
+      fieldPath: metadata.name
+- name: DISPATCHER_NODE_ID
+  valueFrom:
+    fieldRef:
+      fieldPath: metadata.name
+- name: CACHE_DRIVER
+  value: {{ default "redis" .Values.poller.cacheDriver | quote }}
+{{- end }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "librenms.fullname" . }}-poller
+  labels:
+    {{- include "librenms.poller.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.poller.replicaCount }}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      {{- include "librenms.poller.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.poller.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "librenms.poller.labels" . | nindent 8 }}
+    spec:
+      {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              {{- include "librenms.poller.selectorLabels" . | nindent 14 }}
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "librenms.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.poller.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: wait-app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - '-c'
+            - >-
+                until nc -z {{ include "librenms.fullname" . }} {{ .Values.app.service.port }}; do
+                  echo waiting for librenms;
+                  sleep 2;
+                done
+        - name: init-env
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - '-c'
+            - |
+                export | cut -d' ' -f2 | tr -d "'"  > /data/.env
+          envFrom:
+            {{- include "librenms.environment_ref_default" . | nindent 12 }}
+          env:
+            {{- include "librenms.dispatcher_env" . | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      containers:
+        - name: poller
+          securityContext:
+            {{- toYaml .Values.poller.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            {{- include "librenms.environment_ref_default" . | nindent 12 }}
+          env:
+            {{- include "librenms.dispatcher_env" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.poller.resources | nindent 12 }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - '-c'
+                  - >
+                      mysql -h ${DB_HOST} -u ${DB_USER} --password=${DB_PASSWORD} ${DB_NAME} -e
+                      "DELETE FROM poller_cluster WHERE node_id = '${DISPATCHER_NODE_ID}';"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /opt/librenms/config.php
+              subPath: config.php
+      volumes:
+        - name: data
+        - name: config
+          configMap:
+            name: {{ include "librenms.fullname" . }}-config
+      {{- with .Values.poller.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.poller.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.poller.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
