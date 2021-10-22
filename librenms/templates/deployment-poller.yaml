@@ -75,6 +75,17 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+      {{- if .Values.nagios }}
+        - name: nagios-plugins
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - '-c'
+            - apk add nagios-plugins-all
+          volumeMounts:
+            - name: nagios
+              mountPath: /usr/lib/nagios
+      {{- end }}
       containers:
         - name: poller
           securityContext:
@@ -99,11 +110,14 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: nagios
+              mountPath: /usr/lib/nagios
             - name: config
               mountPath: /opt/librenms/config.php
               subPath: config.php
       volumes:
         - name: data
+        - name: nagios
         - name: config
           configMap:
             name: {{ include "librenms.fullname" . }}-config

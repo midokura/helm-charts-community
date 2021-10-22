@@ -19,6 +19,11 @@
         }
       }
     },
+    "nagios": {
+      "type": "boolean",
+      "title": "Enable download of Nagios plugins",
+      "form": true
+    },
     "timezone": {
       "type": "string",
       "title": "Time zone to use",

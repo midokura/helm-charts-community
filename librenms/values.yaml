@@ -33,6 +33,7 @@ ingress:
     # cert-manager.io/cluster-issuer: letsencrypt
 
 timezone: Europe/Madrid
+nagios: false
 
 app:
   key: null

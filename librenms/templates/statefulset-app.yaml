@@ -42,6 +42,17 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+      {{- if .Values.nagios }}
+        - name: nagios-plugins
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - '-c'
+            - apk add nagios-plugins-all
+          volumeMounts:
+            - name: nagios
+              mountPath: /usr/lib/nagios
+      {{- end }}
       containers:
         - name: app
           securityContext:
@@ -68,6 +79,8 @@ spec:
               mountPath: /var/lib/rrdcached/journal
             - name: config
               mountPath: /opt/librenms/config.d
+            - name: nagios
+              mountPath: /usr/lib/nagios
         - name: rrdcached
           securityContext:
             {{- toYaml .Values.rrdcached.securityContext | nindent 12 }}
@@ -110,6 +123,8 @@ spec:
           configMap:
             name: {{ include "librenms.fullname" . }}-config
         - name: rrd-journal
+          emptyDir: {}
+        - name: nagios
           emptyDir: {}
         {{- if and .Values.app.persistence.enabled .Values.app.persistence.existingClaim }}
         - name: data
