@@ -106,6 +106,8 @@ rrdcached:
 
 mysql:
   install: true
+  serviceAccount:
+    create: false
   auth:
     database: librenms
     username: librenms
@@ -120,6 +122,8 @@ mysql:
 
 redis:
   install: true
+  serviceAccount:
+    create: false
   architecture: standalone
   database: 0
   auth:
@@ -130,6 +134,8 @@ redis:
 
 memcached:
   install: true
+  serviceAccount:
+    create: false
   resources:
     limits:
       memory: 200Mi

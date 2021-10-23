@@ -46,8 +46,16 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{ include "librenms.selectorLabels" . }}
 {{- end }}
 
+{{/*
+  NOTE: Not including helm.sh/chart in "app" due to bug StatefulSet
+  cannot be updated if using PVC and changing labels.
+  helm/charts issue #7803
+*/}}
 {{- define "librenms.app.labels" -}}
-{{ include "librenms.base.labels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{ include "librenms.app.selectorLabels" . }}
 {{- end }}
 
