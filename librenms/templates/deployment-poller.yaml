@@ -66,7 +66,7 @@ spec:
           command:
             - sh
             - '-c'
-            - |
+            - >-
                 export | cut -d' ' -f2 | tr -d "'"  > /data/.env
           envFrom:
             {{- include "librenms.environment_ref_default" . | nindent 12 }}
@@ -104,7 +104,7 @@ spec:
                 command:
                   - sh
                   - '-c'
-                  - >
+                  - >-
                       mysql -h ${DB_HOST} -u ${DB_USER} --password=${DB_PASSWORD} ${DB_NAME} -e
                       "DELETE FROM poller_cluster WHERE node_id = '${DISPATCHER_NODE_ID}';"
           volumeMounts:

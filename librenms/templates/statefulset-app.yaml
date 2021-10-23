@@ -18,6 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
+        app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
         {{- include "librenms.app.labels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -33,7 +34,7 @@ spec:
           command:
             - sh
             - '-c'
-            - |
+            - >-
                 export | cut -d' ' -f2 | tr -d "'"  > /data/.env
           envFrom:
             {{- include "librenms.environment_ref_default" . | nindent 12 }}
