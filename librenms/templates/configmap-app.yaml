@@ -14,6 +14,10 @@ data:
     $config["rrd_dir"] = '/data/rrd';
     $config["distributed_poller"] = {{ gt (.Values.poller.replicaCount | int) 0 | ternary "true" "false" }};
     $config["enable_syslog"] = {{ gt (.Values.syslog.replicaCount | int) 0 | ternary "true" "false" }};
+    {{- if .Values.nagios }}
+    $config['show_services'] = true;
+    $config['discover_services'] = true;
+    {{- end }}
     if (strpos(php_uname('n'), '-poller-') !== false) {
       $config["distributed_poller_name"] = php_uname('n');
       $config["distributed_poller_group"] = '0';
@@ -43,7 +47,7 @@ data:
        "force_hostname_to_sysname" "enable_clear_discovery" "enable_footer" "percentile_value" "shorthost_target_length" "addhost_alwayscheckip" "allow_duplicate_sysName"
        "email_backend" "email_from" "email_user" "email_smtp_host" "email_smtp_port" "email_smtp_timeout" "email_smtp_secure" "email_smtp_auth" "email_smtp_username" "email_smtp_password"
        "enable_bgp" "enable_syslog" "enable_inventory" "enable_pseudowires" "enable_vrfs" "enable_ports_etherlike" "enable_ports_junoseatmvp" "enable_ports_adsl" "enable_ports_poe"
-       "enable_billing" "show_services" "default_port_group" "ignore_mount_removable" "ignore_mount_network" "ignore_mount_optical" "storage_perc_warn" "update" "rrd_purge"
+       "enable_billing" "discover_services" "show_services" "default_port_group" "ignore_mount_removable" "ignore_mount_network" "ignore_mount_optical" "storage_perc_warn" "update" "rrd_purge"
     }}
     {{- if hasKey $.Values.config . }}
     $config["{{ . }}"] = {{ get $.Values.config . }};
