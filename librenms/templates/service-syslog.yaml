@@ -11,9 +11,15 @@ spec:
       port: {{ .Values.syslog.service.ports.tcp }}
       targetPort: syslog-tcp
       protocol: TCP
+      {{- if (eq .Values.syslog.service.type "ClusterIP") }}
+      nodePort: null
+      {{- end }}
     - name: syslog
       port: {{ .Values.syslog.service.ports.udp }}
       targetPort: syslog-udp
       protocol: UDP
+      {{- if (eq .Values.syslog.service.type "ClusterIP") }}
+      nodePort: null
+      {{- end }}
   selector:
     {{- include "librenms.syslog.selectorLabels" . | nindent 4 }}
