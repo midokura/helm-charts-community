@@ -22,7 +22,9 @@ spec:
   tls:
     - hosts:
         - {{ .Values.ingress.hostname | quote }}
-      secretName: {{ $fullName }}-tls
+      {{- if .Values.ingress.secret }}
+        secretName: {{ $fullName }}-tls
+      {{- end}}
   {{- end }}
   rules:
     - host: {{ .Values.ingress.hostname | quote }}

@@ -31,6 +31,7 @@ ingress:
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # cert-manager.io/cluster-issuer: letsencrypt
+  secret: true
 
 timezone: &timezone Europe/Madrid
 nagios: false
