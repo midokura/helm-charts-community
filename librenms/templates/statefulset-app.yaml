@@ -66,11 +66,19 @@ spec:
             - name: http
               containerPort: 8000
               protocol: TCP
-          livenessProbe: &app_httpProbe
+          livenessProbe:
             httpGet:
               path: /login
               port: http
-          readinessProbe: *app_httpProbe
+          startupProbe:
+            failureThreshold: 60
+            httpGet:
+              path: /login
+              port: http
+              scheme: HTTP
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 1
           resources:
             {{- toYaml .Values.app.resources | nindent 12 }}
           volumeMounts:
