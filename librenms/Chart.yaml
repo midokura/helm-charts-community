@@ -16,8 +16,8 @@ maintainers:
   - name: David Girón
     url: https://github.com/duhow
 
-version: 0.2.6
-appVersion: "21.10.2"
+version: 0.2.7
+appVersion: "21.11.0"
 
 dependencies:
   - name: mariadb
