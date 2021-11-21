@@ -70,15 +70,21 @@ spec:
             httpGet:
               path: /login
               port: http
-          startupProbe:
-            failureThreshold: 60
+            periodSeconds: 15
+            failureThreshold: 4
+            timeoutSeconds: 5
+          readinessProbe:
             httpGet:
               path: /login
               port: http
-              scheme: HTTP
-            periodSeconds: 15
-            successThreshold: 1
-            timeoutSeconds: 1
+            periodSeconds: 10
+            failureThreshold: 4
+          startupProbe:
+            httpGet:
+              path: /login
+              port: http
+            periodSeconds: 5
+            failureThreshold: 120
           resources:
             {{- toYaml .Values.app.resources | nindent 12 }}
           volumeMounts:
