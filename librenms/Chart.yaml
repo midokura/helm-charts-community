@@ -16,7 +16,7 @@ maintainers:
   - name: David Girón
     url: https://github.com/duhow
 
-version: 0.2.7
+version: 0.2.8
 appVersion: "21.11.0"
 
 dependencies:
