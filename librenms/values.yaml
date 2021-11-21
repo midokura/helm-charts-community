@@ -27,6 +27,7 @@ ingress:
   enabled: false
   tls: false
   hostname: librenms.local
+  existingSecret: ""
   ingressClassName: nginx
   annotations: {}
     # kubernetes.io/ingress.class: nginx
