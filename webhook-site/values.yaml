@@ -1,0 +1,120 @@
+nameOverride: ""
+fullnameOverride: ""
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+ingress:
+  enabled: false
+  tls: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hostname: webhook.site
+
+app:
+  replicaCount: 1
+  image:
+    repository: fredsted/webhook.site
+    pullPolicy: IfNotPresent
+    digest: sha256:580424cab9b3b9ad6e6748d1b5057a30e82ad4fb83a19bd5421679cb3066f583
+    tag: latest
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  service:
+    type: ClusterIP
+    port: 80
+
+echo:
+  replicaCount: 1
+  image:
+    repository: mintopia/laravel-echo-server
+    pullPolicy: IfNotPresent
+    digest: sha256:3038e4a81891536a8e8da819b591a8faf8a2f406a7c79e1c5c1764c18a2d257d
+    tag: latest
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  service:
+    type: ClusterIP
+    port: 80
+
+redis:
+  install: true
+  database: 0
+  auth:
+    enabled: false
+    password: redispass
+  master:
+    persistence:
+      enabled: false
+      size: 1Gi
+  replica:
+    replicaCount: 0
+    persistence:
+      enabled: false
+      size: 1Gi
+  rbac:
+    create: true
+  image:
+    # tag: sha256:CHANGEME

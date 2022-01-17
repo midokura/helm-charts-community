@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # enforced by image nginx.conf
+  name: laravel-echo-server
+  labels:
+    {{- include "webhook-site.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.echo.service.type }}
+  ports:
+    - port: {{ .Values.echo.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "webhook-site.echo.selectorLabels" . | nindent 4 }}

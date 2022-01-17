@@ -1,0 +1,89 @@
+{{- $name := include "webhook-site.name" . }}
+{{- $fullName := include "webhook-site.fullname" . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}-webhook
+  labels:
+    {{- include "webhook-site.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "webhook-site.app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.app.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "webhook-site.app.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "webhook-site.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.app.podSecurityContext | nindent 8 }}
+      containers:
+        - name: webhook
+          args:
+          - php
+          - artisan
+          - queue:work
+          - --daemon
+          - --tries=3
+          - --timeout=10
+          env:
+          - name: APP_DEBUG
+            value: "true"
+          - name: APP_ENV
+            value: dev
+          - name: APP_LOG
+            value: errorlog
+          - name: APP_URL
+            value: http://localhost:8084
+          {{- range tuple "BROADCAST" "CACHE" "QUEUE" }}
+          - name: {{.}}_DRIVER
+            value: redis
+          {{- end }}
+          - name: DB_CONNECTION
+            value: sqlite
+          - name: ECHO_HOST_MODE
+            value: path
+          - name: REDIS_HOST
+            value: {{ .Release.Name }}-redis-master
+          {{- if and .Values.redis.auth.enabled .Values.redis.auth.password }}
+          - name: REDIS_PASSWORD
+            value: {{ .Values.redis.auth.password | quote }}
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.app.securityContext | nindent 12 }}
+          {{- with .Values.app.image }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}{{ if .digest }}@{{.digest}}{{ end }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

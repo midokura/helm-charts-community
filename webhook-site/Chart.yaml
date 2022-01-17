@@ -1,0 +1,23 @@
+apiVersion: v2
+name: webhook-site
+type: application
+description: Easily test HTTP webhooks
+keywords:
+  - webhook
+  - rest
+  - http
+home: https://github.com/midokura/helm-charts-community/tree/main/webhook-site
+sources:
+  - https://github.com/webhooksite/webhook.site
+maintainers:
+  - name: David Girón
+    url: https://github.com/duhow
+
+version: 0.0.1
+appVersion: "1.2"
+
+dependencies:
+  - name: redis
+    repository: https://charts.bitnami.com/bitnami
+    version: 15.7.5
+    condition: redis.install

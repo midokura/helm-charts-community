@@ -1,0 +1,16 @@
+{{- $fullName := include "webhook-site.fullname" . }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ $fullName }}-test-connection
+  labels:
+    {{- include "webhook-site.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ printf "%s:%s" $fullName .Values.app.service.port }}']
+  restartPolicy: Never
