@@ -1,0 +1,85 @@
+{{- $fullName := include "webhook-site.fullname" . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}-echo
+  labels:
+    {{- include "webhook-site.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.echo.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "webhook-site.echo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.echo.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "webhook-site.echo.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "webhook-site.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.echo.podSecurityContext | nindent 8 }}
+      containers:
+        - name: echo
+          env:
+          - name: ECHO_ALLOW_CORS
+            value: "true"
+          {{- range tuple "HEADERS" "METHODS" "ORIGIN" }}
+          - name: ECHO_ALLOW_{{.}}
+            value: '*'
+          {{- end }}
+          - name: ECHO_PROTOCOL
+            value: http
+          - name: ECHO_REDIS_HOSTNAME
+            value: {{ .Release.Name }}-redis-master
+          {{- if and .Values.redis.auth.enabled .Values.redis.auth.password }}
+          - name: ECHO_REDIS_PASSWORD
+            value: {{ .Values.redis.auth.password | quote }}
+          {{- end }}
+          - name: ECHO_REDIS_PORT
+            value: {{ default 6379 .Values.redis.master.service.port | quote }}
+          - name: LARAVEL_ECHO_SERVER_AUTH_HOST
+            value: https://webhook
+          - name: LARAVEL_ECHO_SERVER_HOST
+            value: 0.0.0.0
+          - name: LARAVEL_ECHO_SERVER_PORT
+            value: "6001"
+          securityContext:
+            {{- toYaml .Values.echo.securityContext | nindent 12 }}
+          {{- with .Values.echo.image }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}{{ if .digest }}@{{.digest}}{{ end }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 6001
+              protocol: TCP
+          #livenessProbe:
+          #  httpGet:
+          #    path: /
+          #    port: http
+          #readinessProbe:
+          #  httpGet:
+          #    path: /
+          #    port: http
+          resources:
+            {{- toYaml .Values.echo.resources | nindent 12 }}
+      {{- with .Values.echo.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.echo.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.echo.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

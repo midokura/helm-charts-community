@@ -1,0 +1,4 @@
+/values*
+!/values.yaml
+
+/charts/*
