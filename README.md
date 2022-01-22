@@ -9,6 +9,7 @@ If this content helps you, [give this repo a star!](https://github.com/midokura/
 |------|------------|
 | [LibreNMS](https://github.com/midokura/helm-charts-community/tree/main/librenms) | [librenms/docker](https://github.com/librenms/docker) |
 | [SSHPortal](https://github.com/midokura/helm-charts-community/tree/main/sshportal) | [moul/sshportal](https://github.com/moul/sshportal) |
+| [Webhook.site](https://github.com/midokura/helm-charts-community/tree/main/webhook-site) | [webhooksite/webhook.site](https://github.com/webhooksite/webhook.site) |
 
 Feel free to contribute back or report any bugs you find.
 
