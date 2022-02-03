@@ -9,7 +9,7 @@
 {{/* Basic auth */}}
 {{- if and .Values.ingress.auth.enabled (not (hasKey .Values.ingress.annotations "nginx.ingress.kubernetes.io/auth-type")) }}
 {{- $_ := set .Values.ingress.annotations "nginx.ingress.kubernetes.io/auth-type" "basic" }}
-{{- $_ := set .Values.ingress.annotations "nginx.ingress.kubernetes.io/auth-secret" (default .Values.ingress.auth.useSecretName (printf "%s-auth" .Release.Name)) }}
+{{- $_ := set .Values.ingress.annotations "nginx.ingress.kubernetes.io/auth-secret" (default (printf "%s-auth" .Release.Name) .Values.ingress.auth.useSecretName) }}
 {{- end }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
