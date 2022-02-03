@@ -1,0 +1,15 @@
+{{- if and .Values.ingress.auth.enabled .Values.ingress.auth.users }}
+apiVersion: v1
+kind: Secret
+type: Opaque
+# type: kubernetes.io/basic-auth
+metadata:
+  name: {{ printf "%s-auth" .Release.Name }}
+  labels:
+    {{- include "nginx-static.labels" . | nindent 4 }}
+stringData:
+  auth: |
+    {{- range .Values.ingress.auth.users }}
+    {{ htpasswd (.username | toString) (.password | toString) }}
+    {{- end }}
+{{- end }}

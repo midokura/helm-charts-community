@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nginx-static.fullname" . }}
+  labels:
+    {{- include "nginx-static.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nginx-static.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "nginx-static.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+      {{- if .Values.git.enabled }}
+        - name: git-clone
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- with .Values.image }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}{{ if .digest }}@{{ .digest }}{{ end }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          env:
+            {{- with .Values.git }}
+            - name: GIT_USER
+              value: {{ .user | quote }}
+            - name: GIT_SERVER
+              value: {{ .server | quote }}
+            - name: GIT_REPOSITORY
+              value: {{ required "Please provide repository to clone." .repository | quote }}
+            - name: GIT_BRANCH
+              value: {{ .branch | quote }}
+            {{- end }}
+            - name: TEMPDIR
+              value: /tmp/git-tmpdir
+          command:
+            - sh
+            - '-c'
+            - >
+                apt update;
+                apt install -y git openssh-client;
+                mkdir -p ~/.ssh;
+                eval $(ssh-agent);
+                ssh-add /ssh/id_rsa;
+                ssh-keyscan ${GIT_SERVER} 2>/dev/null > ~/.ssh/known_hosts;
+                git clone -b ${GIT_BRANCH} --depth 1 git@${GIT_SERVER}:${GIT_REPOSITORY} ${TEMPDIR};
+                rm -rf ${TEMPDIR}/.git;
+                mv ${TEMPDIR}/* /usr/share/nginx/html/
+          volumeMounts:
+            - name: nginx-html
+              mountPath: /usr/share/nginx/html
+            - name: ssh-key
+              mountPath: /ssh
+      {{- end }}{{/* .Values.git.enabled */}}
+      containers:
+        - name: nginx
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- with .Values.image }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}{{ if .digest }}@{{ .digest }}{{ end }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+          {{- with .Values.git.enabled }}
+            - name: nginx-html
+              mountPath: /usr/share/nginx/html
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.git.enabled }}
+      volumes:
+        - name: nginx-html
+          emptyDir:
+          {{- if .Values.useMemoryStorage }}
+            medium: Memory
+          {{- end }}
+        - name: ssh-key
+          secret:
+            defaultMode: 0400
+            secretName: {{ required "Please enter your Secret with ssh-privatekey." .Values.git.sshKeySecret }}
+            items:
+              - key: ssh-privatekey
+                path: id_rsa
+      {{- end }}{{/* .Values.git.enabled */}}

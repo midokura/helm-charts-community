@@ -1,0 +1,7 @@
+Chart.lock
+charts/*
+/values-*
+
+*.pem
+*.pub
+*.key
