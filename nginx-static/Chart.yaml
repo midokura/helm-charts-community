@@ -1,0 +1,6 @@
+apiVersion: v2
+name: nginx-static
+description: Deploy nginx with static pages
+type: application
+version: 0.0.5
+appVersion: "1.21.5"

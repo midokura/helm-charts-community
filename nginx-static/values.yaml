@@ -1,0 +1,69 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1.21.5"
+  digest: sha256:ee89b00528ff4f02f2405e4ee221743ebc3f8e8dd0bfd5c4c20a2fa2aaa7ede3
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  auth:
+    enabled: false
+    users: {}
+    #  - username: ""
+    #    password: ""
+    useSecretName: ""
+  className: nginx
+  annotations: {}
+    # kubernetes.io/tls-acme: "true"
+  hostname: ""
+  tls: false
+
+resources:
+  limits:
+    cpu: 400m
+    memory: 100Mi
+  requests:
+    cpu: 10m
+    memory: 10Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+useMemoryStorage: false
+git:
+  enabled: false
+  server: github.com
+  user: git
+  # kubectl create secret generic --type=kubernetes.io/ssh-auth \
+  #   --from-file=ssh-publickey=ssh.pub --from-file=ssh-privatekey=ssh.key \
+  #   -n YOURNAMESPACE yourname-sshkey
+  sshKeySecret: ""
+  repository: ""
+  branch: "main"
