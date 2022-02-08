@@ -2,6 +2,47 @@ apiVersion: v1
 entries:
   librenms:
   - apiVersion: v2
+    appVersion: 22.1.0
+    created: "2022-02-08T21:38:28.170540455Z"
+    dependencies:
+    - alias: mysql
+      condition: mysql.install
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.3.2
+    - condition: memcached.install
+      name: memcached
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - distributed-poller
+      version: 6.0.2
+    - condition: redis.install
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - distributed-poller
+      version: 16.3.1
+    description: SNMP monitoring for network devices
+    digest: 6e4e33978824ed7813fe91caece87d4241889b8d57af506ef2559fad0c23ce2e
+    home: https://github.com/midokura/helm-charts-community/tree/main/librenms
+    icon: https://www.librenms.org/images/android-chrome-192x192.png
+    keywords:
+    - nms
+    - network
+    - snmp
+    - monitoring
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: librenms
+    sources:
+    - https://github.com/librenms/docker
+    - https://github.com/crazy-max/docker-rrdcached
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/librenms-0.2.9/librenms-0.2.9.tgz
+    version: 0.2.9
+  - apiVersion: v2
     appVersion: 21.11.0
     created: "2022-02-03T20:14:40.05895626Z"
     dependencies:
@@ -44,6 +85,16 @@ entries:
     version: 0.2.8
   nginx-static:
   - apiVersion: v2
+    appVersion: 1.21.6
+    created: "2022-02-08T21:38:28.355554221Z"
+    description: Deploy nginx with static pages
+    digest: c1ef7c0d120cfdec2fa5c2e125c37179c22ad68259528ce0d54fcf864f4202b3
+    name: nginx-static
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/nginx-static-0.0.7/nginx-static-0.0.7.tgz
+    version: 0.0.7
+  - apiVersion: v2
     appVersion: 1.21.5
     created: "2022-02-03T20:40:51.84528934Z"
     description: Deploy nginx with static pages
@@ -65,6 +116,24 @@ entries:
     version: 0.0.5
   sshportal:
   - apiVersion: v2
+    appVersion: 1.19.3
+    created: "2022-02-08T21:38:28.5543549Z"
+    dependencies:
+    - alias: mysql
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.3.2
+    description: simple, fun and transparent SSH (and telnet) bastion server
+    digest: 78ccb3dae5d0199f1a714d950374dc822221adf4a7799cbe8738cc9f70968dbe
+    home: https://github.com/moul/sshportal
+    name: sshportal
+    sources:
+    - https://github.com/moul/sshportal
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/sshportal-0.1.1/sshportal-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 1.18.3
     created: "2022-02-03T20:14:40.314742287Z"
     dependencies:
@@ -83,6 +152,31 @@ entries:
     - https://github.com/midokura/helm-charts-community/releases/download/sshportal-0.1.0/sshportal-0.1.0.tgz
     version: 0.1.0
   webhook-site:
+  - apiVersion: v2
+    appVersion: "1.2"
+    created: "2022-02-08T21:38:28.746395873Z"
+    dependencies:
+    - condition: redis.install
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.3.1
+    description: Easily test HTTP webhooks
+    digest: 1061801041bc01c10a11c551314c1c2c1df922cc180bf968349bd5b7d372ed01
+    home: https://github.com/midokura/helm-charts-community/tree/main/webhook-site
+    keywords:
+    - webhook
+    - rest
+    - http
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: webhook-site
+    sources:
+    - https://github.com/webhooksite/webhook.site
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.2/webhook-site-0.0.2.tgz
+    version: 0.0.2
   - apiVersion: v2
     appVersion: "1.2"
     created: "2022-02-03T20:14:40.457731662Z"
@@ -108,4 +202,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2022-02-03T20:40:51.84529644Z"
+generated: "2022-02-08T21:38:28.746420273Z"
