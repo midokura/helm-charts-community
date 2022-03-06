@@ -5,7 +5,7 @@
   "dependencyDashboard": false,
   "timezone": "Europe/Madrid",
   "schedule": ["on monday"],
-  "enabledManagers": ["helmv3", "helm-values"],
+  "enabledManagers": ["helmv3", "helm-values", "docker"],
   "packageRules": [
     {
       "matchPackageNames": ["librenms/librenms", "nginx"],
