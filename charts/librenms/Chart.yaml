@@ -17,7 +17,8 @@ maintainers:
     url: https://github.com/duhow
 
 version: 0.2.9
-appVersion: "22.1.0"
+# renovate: datasource=docker depName=librenms/librenms
+appVersion: 22.1.0
 
 dependencies:
   - name: mariadb

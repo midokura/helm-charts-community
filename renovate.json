@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "dependencyDashboard": false,
+  "timezone": "Europe/Madrid",
+  "schedule": ["on monday"],
+  "enabledManagers": ["helmv3", "helm-values", "regex"],
+  "regexManagers": [
+    {
+      "fileMatch": [".+\/Chart.yaml$"],
+      "matchStrings": ["# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\n.*?appVersion:\\s*(?<currentValue>[\\w\\d\\.]+)"],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["librenms/librenms", "nginx"],
+      "versioning": "semver"
+    },
+    {
+      "matchPackageNames": ["moul/sshportal"],
+      "extractVersion": "^v(?<version>\\d+\\.\\d+\\.\\d+)$"
+    }
+  ]
+}
