@@ -4,8 +4,8 @@
   ],
   "dependencyDashboard": false,
   "timezone": "Europe/Madrid",
-  "schedule": ["every monday"],
-  "enabledManagers": ["helm", "helmv3", "helm-values"],
+  "schedule": ["on monday"],
+  "enabledManagers": ["helmv3", "helm-values"],
   "packageRules": [
     {
       "matchPackageNames": ["librenms/librenms", "nginx"],
