@@ -1,5 +1,19 @@
 {
   "extends": [
     "config:base"
+  ],
+  "dependencyDashboard": false,
+  "timezone": "Europe/Madrid",
+  "schedule": ["every monday"],
+  "enabledManagers": ["helm", "helmv3", "helm-values"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["librenms/librenms", "nginx"],
+      "versioning": "semver"
+    },
+    {
+      "matchPackageNames": ["moul/sshportal"],
+      "extractVersion": "^v(?<version>\\d+\\.\\d+\\.\\d+)$"
+    }
   ]
 }
