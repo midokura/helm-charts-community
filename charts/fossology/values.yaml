@@ -50,7 +50,7 @@ scheduler:
 
   service:
     type: ClusterIP
-    port: 80
+    port: 24693
 
   resources: {}
     # limits:

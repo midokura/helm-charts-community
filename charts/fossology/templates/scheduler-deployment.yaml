@@ -37,9 +37,12 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ include "fossology.fullname" . }}-config
+          readinessProbe:
+            tcpSocket:
+              port: 24693
           ports:
-            - name: http
-              containerPort: 80
+            - name: scheduler
+              containerPort: 24693
               protocol: TCP
           resources:
             {{- toYaml .Values.scheduler.resources | nindent 12 }}
