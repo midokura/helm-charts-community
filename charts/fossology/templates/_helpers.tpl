@@ -79,3 +79,7 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "fossology.pvcName" -}}
+{{ include "fossology.fullname" . }}-data-repository
+{{- end }}

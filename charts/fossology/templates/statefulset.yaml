@@ -23,6 +23,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      terminationGracePeriodSeconds: 1
       serviceAccountName: {{ include "fossology.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -50,6 +51,9 @@ spec:
             httpGet:
               path: /repo/api/v1/version
               port: http
+          volumeMounts:
+            - name: repository
+              mountPath: {{ .Values.persistence.mountPath }}
           resources:
             {{- toYaml .Values.web.resources | nindent 12 }}
         - name: scheduler
@@ -70,8 +74,19 @@ spec:
             - name: scheduler
               containerPort: 24693
               protocol: TCP
+          volumeMounts:
+            - name: repository
+              mountPath: {{ .Values.persistence.mountPath }}
           resources:
             {{- toYaml .Values.scheduler.resources | nindent 12 }}
+      volumes:
+        - name: repository
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (include "fossology.pvcName" .) }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
