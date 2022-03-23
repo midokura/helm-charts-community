@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fossology.fullname" . }}-scheduler
+  labels:
+    {{- include "fossology.scheduler.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "fossology.scheduler.selectorLabels" . | nindent 4 }}
+{{- with .Values.scheduler.service }}
+  type: {{ .type }}
+  ports:
+    - port: {{ .port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+{{- end }}

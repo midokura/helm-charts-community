@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fossology.fullname" . }}-web
+  labels:
+    {{- include "fossology.web.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.web.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "fossology.web.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.web.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "fossology.web.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.web.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "fossology.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.web.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 1
+      containers:
+        - name: web
+          securityContext:
+            {{- toYaml .Values.web.securityContext | nindent 12 }}
+          {{- with .Values.web.image }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          args: [web]
+          env:
+            - name: FOSSOLOGY_SCHEDULER_HOST
+              value: {{ include "fossology.fullname" . }}-scheduler
+          envFrom:
+            - secretRef:
+                name: {{ include "fossology.fullname" . }}-config
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /repo/api/v1/version
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /repo/api/v1/version
+              port: http
+          resources:
+            {{- toYaml .Values.web.resources | nindent 12 }}
+      {{- with .Values.web }}
+      {{- with .nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}

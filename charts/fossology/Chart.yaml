@@ -1,0 +1,26 @@
+apiVersion: v2
+name: fossology
+type: application
+description: Open source license compliance software system and toolkit
+keywords:
+  - nms
+  - network
+  - snmp
+  - monitoring
+home: https://github.com/midokura/helm-charts-community/tree/main/fossology
+icon: https://www.fossology.org/wp-content/uploads/sites/39/2017/08/logo_fossology.png
+sources:
+  - https://github.com/fossology/fossology
+maintainers:
+  - name: David Girón
+    url: https://github.com/duhow
+
+version: 0.1.0
+# renovate: datasource=docker depName=fossology/fossology
+appVersion: 4.0.0
+
+dependencies:
+  - name: postgresql
+    repository: https://charts.bitnami.com/bitnami
+    version: 11.1.9
+    condition: postgresql.install
