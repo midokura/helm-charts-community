@@ -10,6 +10,12 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+image:
+  repository: fossology/fossology
+  pullPolicy: IfNotPresent
+  tag: ""
+imagePullSecrets: []
+
 ingress:
   enabled: false
   className: ""
@@ -27,31 +33,12 @@ ingress:
   #      - chart-example.local
 
 scheduler:
-  replicaCount: 1
-
-  image:
-    repository: fossology/fossology
-    pullPolicy: IfNotPresent
-    tag: ""
-  imagePullSecrets: []
-
   podAnnotations: {}
-
   podSecurityContext: {}
-    # fsGroup: 2000
-
   securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
   service:
     type: ClusterIP
     port: 24693
-
   resources: {}
     # limits:
     #   cpu: 100m
@@ -66,30 +53,12 @@ scheduler:
 
 web:
   replicaCount: 1
-
-  image:
-    repository: fossology/fossology
-    pullPolicy: IfNotPresent
-    tag: ""
-  imagePullSecrets: []
-
   podAnnotations: {}
-
   podSecurityContext: {}
-    # fsGroup: 2000
-
   securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
   service:
     type: ClusterIP
     port: 80
-
   resources: {}
     # limits:
     #   cpu: 100m
