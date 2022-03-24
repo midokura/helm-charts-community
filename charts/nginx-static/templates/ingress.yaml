@@ -35,7 +35,11 @@ spec:
   tls:
     - hosts:
         - {{ .Values.ingress.hostname | quote }}
+      {{- if deepEqual .Values.ingress.tls true }}
       secretName: {{ printf "%s-tls" .Values.ingress.hostname | quote }}
+      {{- else }}
+      secretName: {{ .Values.ingress.tls | quote }}
+      {{- end }}
   {{- end }}
   rules:
     - host: {{ .Values.ingress.hostname | quote }}
