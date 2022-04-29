@@ -6,20 +6,30 @@ metadata:
     {{- include "librenms.syslog.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.syslog.service.type }}
+  # add source IP address
+  externalTrafficPolicy: Local
   ports:
+  {{- if (.Values.syslog.service.ports.tcp) }}
     - name: syslog-tcp
       port: {{ .Values.syslog.service.ports.tcp }}
       targetPort: syslog-tcp
       protocol: TCP
       {{- if (eq .Values.syslog.service.type "ClusterIP") }}
       nodePort: null
+      {{- else if (eq .Values.syslog.service.type "NodePort") }}
+      nodePort: {{ .Values.syslog.service.ports.tcp }}
       {{- end }}
+  {{- end }}
+  {{- if (.Values.syslog.service.ports.udp) }}
     - name: syslog
       port: {{ .Values.syslog.service.ports.udp }}
       targetPort: syslog-udp
       protocol: UDP
       {{- if (eq .Values.syslog.service.type "ClusterIP") }}
       nodePort: null
+      {{- else if (eq .Values.syslog.service.type "NodePort") }}
+      nodePort: {{ .Values.syslog.service.ports.udp }}
       {{- end }}
+  {{- end }}
   selector:
     {{- include "librenms.syslog.selectorLabels" . | nindent 4 }}
