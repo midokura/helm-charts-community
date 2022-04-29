@@ -24,17 +24,17 @@ dependencies:
   - name: mariadb
     alias: mysql
     repository: https://charts.bitnami.com/bitnami
-    version: 10.3.7
+    version: 10.5.1
     condition: mysql.install
   - name: memcached
     repository: https://charts.bitnami.com/bitnami
-    version: 6.0.5
+    version: 6.0.16
     condition: memcached.install
     tags:
       - distributed-poller
   - name: redis
     repository: https://charts.bitnami.com/bitnami
-    version: 16.4.5
+    version: 16.8.9
     condition: redis.install
     tags:
       - distributed-poller
