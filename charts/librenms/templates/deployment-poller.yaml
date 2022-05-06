@@ -99,6 +99,17 @@ spec:
           resources:
             {{- toYaml .Values.poller.resources | nindent 12 }}
           lifecycle:
+            {{- if .Values.applyPatchPR }}
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - '-c'
+                  - >-
+                      for PR_ID in {{ join " " .Values.applyPatchPR }}; do
+                        ./scripts/github-apply ${PR_ID};
+                      done
+            {{- end }}
             preStop:
               exec:
                 command:

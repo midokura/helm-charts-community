@@ -36,6 +36,9 @@ ingress:
 timezone: &timezone Europe/Madrid
 nagios: false
 
+# -- Apply GitHub PR patches. Enter a list of IDs
+applyPatchPR: []
+
 app:
   key: null
   replicaCount: 1
