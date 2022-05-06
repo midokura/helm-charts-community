@@ -62,8 +62,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             {{ include "librenms.environment_ref_default" . | nindent 12 }}
-          {{- if .Values.applyPatchPR }}
           lifecycle:
+            {{- if .Values.applyPatchPR }}
             postStart:
               exec:
                 command:
@@ -73,7 +73,14 @@ spec:
                       for PR_ID in {{ join " " .Values.applyPatchPR }}; do
                         ./scripts/github-apply ${PR_ID};
                       done
-          {{- end }}
+            {{- end }}
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - '-c'
+                  - >-
+                      s6-svscanctl -q /var/run/s6/services; killall -9 s6-supervise
           ports:
             - name: http
               containerPort: 8000

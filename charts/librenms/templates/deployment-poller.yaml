@@ -11,6 +11,8 @@
       fieldPath: metadata.name
 - name: CACHE_DRIVER
   value: {{ default "redis" .Values.poller.cacheDriver | quote }}
+- name: DISPATCHER_ARGS
+  value: {{ .Values.poller.args | quote }}
 {{- end }}
 
 apiVersion: apps/v1
@@ -117,7 +119,17 @@ spec:
                   - '-c'
                   - >-
                       mysql -h ${DB_HOST} -u ${DB_USER} --password=${DB_PASSWORD} ${DB_NAME} -e
-                      "DELETE FROM poller_cluster WHERE node_id = '${DISPATCHER_NODE_ID}';"
+                      "DELETE FROM poller_cluster WHERE node_id = '${DISPATCHER_NODE_ID}';" ;
+                      s6-svscanctl -q /var/run/s6/services ;
+                      killall -9 s6-supervise
+          livenessProbe:
+            exec:
+              command:
+                - pgrep
+                - python3
+            periodSeconds: 10
+            failureThreshold: 2
+            timeoutSeconds: 5
           volumeMounts:
             - name: data
               mountPath: /data
