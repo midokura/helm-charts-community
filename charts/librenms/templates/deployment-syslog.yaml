@@ -37,6 +37,18 @@ spec:
           env:
             - name: SIDECAR_SYSLOGNG
               value: "1"
+          {{- if .Values.applyPatchPR }}
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - '-c'
+                  - >-
+                      for PR_ID in {{ join " " .Values.applyPatchPR }}; do
+                        ./scripts/github-apply ${PR_ID};
+                      done
+          {{- end }}
           ports:
             - name: syslog-tcp
               containerPort: 514

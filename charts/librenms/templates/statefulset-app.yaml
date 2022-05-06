@@ -62,6 +62,18 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             {{ include "librenms.environment_ref_default" . | nindent 12 }}
+          {{- if .Values.applyPatchPR }}
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - '-c'
+                  - >-
+                      for PR_ID in {{ join " " .Values.applyPatchPR }}; do
+                        ./scripts/github-apply ${PR_ID};
+                      done
+          {{- end }}
           ports:
             - name: http
               containerPort: 8000
