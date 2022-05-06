@@ -3,6 +3,47 @@ entries:
   librenms:
   - apiVersion: v2
     appVersion: 22.4.1
+    created: "2022-05-06T16:55:07.43066408Z"
+    dependencies:
+    - alias: mysql
+      condition: mysql.install
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.5.1
+    - condition: memcached.install
+      name: memcached
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - distributed-poller
+      version: 6.0.16
+    - condition: redis.install
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - distributed-poller
+      version: 16.8.9
+    description: SNMP monitoring for network devices
+    digest: 6c9a6e359931e7fb54beb5d506b62d8e041eb5bfd6022481974a4d1b051d34d1
+    home: https://github.com/midokura/helm-charts-community/tree/main/librenms
+    icon: https://www.librenms.org/images/android-chrome-192x192.png
+    keywords:
+    - nms
+    - network
+    - snmp
+    - monitoring
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: librenms
+    sources:
+    - https://github.com/librenms/docker
+    - https://github.com/crazy-max/docker-rrdcached
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/librenms-0.2.13/librenms-0.2.13.tgz
+    version: 0.2.13
+  - apiVersion: v2
+    appVersion: 22.4.1
     created: "2022-05-06T14:04:39.635710957Z"
     dependencies:
     - alias: mysql
@@ -388,4 +429,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2022-05-06T14:04:39.635922764Z"
+generated: "2022-05-06T16:55:07.43070438Z"
