@@ -33,13 +33,17 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # cert-manager.io/cluster-issuer: letsencrypt
 
+# -- Set Timezone, both in application and MySQL database.
 timezone: &timezone Europe/Madrid
+# -- Download Nagios check scripts before launching application.
 nagios: false
 
 # -- Apply GitHub PR patches. Enter a list of IDs
 applyPatchPR: []
 
 app:
+  # -- Provide your own Artisan encryption key (base64:XXXX)
+  # or create a new one (null).
   key: null
   replicaCount: 1
   nodeSelector: {}
@@ -80,9 +84,13 @@ poller:
   podSecurityContext: {}
   securityContext: *defaultSecurityContext
   resources: {}
+  # -- arguments to pass to librenms-service.py.
+  # Valid: -t -d -v -g
+  args: ""
 
 syslog:
   replicaCount: 1
+  # -- If using UDP + NodePort, we recommend setting a specific node.
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -91,6 +99,7 @@ syslog:
   securityContext: *defaultSecurityContext
   service:
     type: ClusterIP
+    # -- Set value to null to disable the service.
     ports:
       tcp: 514
       udp: 514
