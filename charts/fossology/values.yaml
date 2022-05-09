@@ -1,0 +1,69 @@
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+image:
+  repository: fossology/fossology
+  pullPolicy: IfNotPresent
+  tag: ""
+imagePullSecrets: []
+
+podAnnotations: {}
+podSecurityContext: {}
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 500M
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+scheduler:
+  securityContext: {}
+  service:
+    type: ClusterIP
+    port: 24693
+  resources: {}
+
+web:
+  securityContext: {}
+  service:
+    type: ClusterIP
+    port: 80
+  resources: {}
+
+persistence:
+  enabled: false
+  size: 10Gi
+  existingClaim: ""
+  storageClass: ""
+  mountPath: /srv/fossology/repository
+
+postgresql:
+  auth:
+    enablePostgresUser: false
+    username: fossy
+    password: fossy
+    database: fossology

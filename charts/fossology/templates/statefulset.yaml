@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "fossology.fullname" . }}
+  labels:
+    {{- include "fossology.web.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  serviceName: {{ include "fossology.fullname" . }}
+  selector:
+    matchLabels:
+      {{- include "fossology.web.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "fossology.web.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 1
+      serviceAccountName: {{ include "fossology.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: web
+          securityContext:
+            {{- toYaml .Values.web.securityContext | nindent 12 }}
+          {{- with .Values.image }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          args: [web]
+          envFrom:
+            - secretRef:
+                name: {{ include "fossology.fullname" . }}-config
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /repo/api/v1/version
+              port: http
+          startupProbe:
+            httpGet:
+              path: /repo/api/v1/version
+              port: http
+          volumeMounts:
+            - name: repository
+              mountPath: {{ .Values.persistence.mountPath }}
+          resources:
+            {{- toYaml .Values.web.resources | nindent 12 }}
+        - name: scheduler
+          securityContext:
+            {{- toYaml .Values.scheduler.securityContext | nindent 12 }}
+          {{- with .Values.image }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          args: [scheduler]
+          envFrom:
+            - secretRef:
+                name: {{ include "fossology.fullname" . }}-config
+          readinessProbe:
+            tcpSocket:
+              port: 24693
+          ports:
+            - name: scheduler
+              containerPort: 24693
+              protocol: TCP
+          volumeMounts:
+            - name: repository
+              mountPath: {{ .Values.persistence.mountPath }}
+          resources:
+            {{- toYaml .Values.scheduler.resources | nindent 12 }}
+      volumes:
+        - name: repository
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (include "fossology.pvcName" .) }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
