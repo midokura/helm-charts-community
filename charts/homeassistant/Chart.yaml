@@ -1,0 +1,19 @@
+apiVersion: v2
+name: home-assistant
+description: Open source home automation that puts local control and privacy first.
+
+type: application
+version: 0.1.0
+# renovate: datasource=github-tags depName=home-assistant/core
+appVersion: "2022.5.3"
+
+home: https://home-assistant.io
+icon: https://raw.githubusercontent.com/home-assistant/assets/master/logo/logo.svg
+sources:
+  - https://github.com/home-assistant/core
+
+dependencies:
+  - name: mariadb
+    alias: mysql
+    version: 11.0.2
+    repository: https://charts.bitnami.com/bitnami

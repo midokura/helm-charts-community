@@ -1,0 +1,28 @@
+{{- if not .Values.config.existingName }}
+{{- $fullName := include "homeassistant.fullname" . }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}-config
+  labels:
+    {{- include "homeassistant.labels" . | nindent 4 }}
+data:
+{{- if .Values.config.values }}
+  configuration.yaml: {{ toYaml .Values.config.values | nindent 4 }}
+{{- else }}
+  configuration.yaml: |
+    default_config:
+    tts:
+      - platform: google_translate
+    automation: !include automations.yaml
+    script: !include scripts.yaml
+    scene: !include scenes.yaml
+{{- if .Values.mysql.install }}
+    recorder:
+    {{- with .Values.mysql.auth }}
+      db_url: {{ printf "mysql://%s:%s@%s-mysql/%s?charset=utf8mb4" .username .password $.Release.Name .database | quote }}
+    {{- end }}
+{{- end }}
+{{- end }}
+
+{{- end }}

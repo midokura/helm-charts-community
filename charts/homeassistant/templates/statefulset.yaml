@@ -1,0 +1,117 @@
+{{- $fullName := include "homeassistant.fullname" . }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "homeassistant.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "homeassistant.selectorLabels" . | nindent 6 }}
+  serviceName: {{ $fullName }}
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "homeassistant.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      hostNetwork: {{ .Values.hostNetwork }}
+      serviceAccountName: {{ include "homeassistant.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: app
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- with .Values.image }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          env:
+            - name: TZ
+              value: {{ .Values.timezone | quote }}
+          ports:
+            - name: http
+              containerPort: 8123
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            failureThreshold: 40
+            periodSeconds: 3
+          volumeMounts:
+            - name: data
+              mountPath: /config
+            - name: configuration
+              mountPath: /config/configuration.yaml
+              subPath: configuration.yaml
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: configuration
+          configMap:
+            {{- if .Values.config.existingName }}
+            name: {{ .Values.config.existingName | quote }}
+            {{- else }}
+            name: {{ $fullName }}-config
+            {{- end }}
+        {{- if and .Values.persistence.enabled .Values.persistence.existingClaim }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim }}
+        {{- else if not .Values.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+  {{- else if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          {{ include "homeassistant.labels" . | nindent 10 }}
+        {{- if .Values.persistence.annotations }}
+        annotations:
+          {{- toYaml .Values.persistence.annotations | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          {{- range .Values.persistence.accessModes }}
+          - {{ . | quote }}
+          {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+        storageClass: {{ .Values.persistence.storageClass }}
+        {{- if .Values.persistence.selector }}
+        selector:
+          {{- toYaml .Values.persistence.selector | nindent 10 }}
+        {{- end }}
+  {{- end }}
