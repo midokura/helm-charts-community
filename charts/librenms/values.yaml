@@ -117,6 +117,15 @@ rrdcached:
     port: 42217
   resources: {}
 
+smokeping:
+  enabled: true
+  # can be 15min, hourly, daily
+  cron: 15min
+  image:
+    repository: linuxserver/smokeping
+    tag: "2.7.3"
+    pullPolicy: IfNotPresent
+
 mysql:
   install: true
   serviceAccount:
