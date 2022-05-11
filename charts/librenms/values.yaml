@@ -121,6 +121,8 @@ smokeping:
   enabled: true
   # can be 15min, hourly, daily
   cron: 15min
+  # -- expose to ingress
+  ingress: true
   image:
     repository: linuxserver/smokeping
     tag: "2.7.3"
