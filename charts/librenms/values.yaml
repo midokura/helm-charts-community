@@ -118,7 +118,7 @@ rrdcached:
   resources: {}
 
 smokeping:
-  enabled: true
+  enabled: false
   # -- Set amount of pings
   pings: 20
   # -- can be 15min, hourly, daily
