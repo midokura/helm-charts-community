@@ -182,12 +182,11 @@ spec:
               subPath: rrd-smokeping
             - name: config-smokeping
               mountPath: /etc/smokeping/config.d
+          {{- range tuple "Probes" "Targets" "Database" }}
             - name: config-smokeping-override
-              mountPath: /config/Probes
-              subPath: Probes
-            - name: config-smokeping-override
-              mountPath: /config/Targets
-              subPath: Targets
+              mountPath: /config/{{ . }}
+              subPath: {{ . }}
+          {{- end }}
             - name: fping6
               mountPath: /usr/sbin/fping6
               subPath: fping6

@@ -119,7 +119,9 @@ rrdcached:
 
 smokeping:
   enabled: true
-  # can be 15min, hourly, daily
+  # -- Set amount of pings
+  pings: 20
+  # -- can be 15min, hourly, daily
   cron: 15min
   # -- expose to ingress
   ingress: true
