@@ -130,6 +130,11 @@ smokeping:
       owner: LinuxServer.io
       contact: ironicbadger@linuxserver.io
       mailhost: my.mail.host
+  auth:
+    # -- copy from LibreNMS database as htpasswd
+    librenms: true
+    # -- allow guest access
+    guest: false
   image:
     repository: linuxserver/smokeping
     tag: "2.7.3"

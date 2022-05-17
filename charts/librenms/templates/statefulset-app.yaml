@@ -72,6 +72,24 @@ spec:
             - name: crontab-smokeping
               mountPath: {{ printf "/etc/periodic/%s/smokeping-cron" .Values.smokeping.cron }}
               subPath: smokeping-cron
+      {{- if .Values.smokeping.auth.librenms }}
+        - name: smokeping-auth
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - '-c'
+            - >-
+                mysql -h ${DB_HOST} -u ${DB_USER} --password=${DB_PASSWORD} ${DB_NAME} -sN -e
+                "SELECT CONCAT(username, ':', password) FROM users WHERE auth_type IN('mysql');" > /tmp/apache2/passwords
+          envFrom:
+            {{- include "librenms.environment_ref_default" . | nindent 12 }}
+          volumeMounts:
+            # required access to LibreNMS DB config + librenms.log
+            - name: data
+              mountPath: /data
+            - name: auth-smokeping
+              mountPath: /tmp/apache2
+      {{- end }}
       {{- end }}
       containers:
         - name: app
@@ -187,6 +205,14 @@ spec:
               mountPath: /config/{{ . }}
               subPath: {{ . }}
           {{- end }}
+          {{- if and (not .Values.smokeping.auth.guest) }}
+            - name: config-smokeping-override
+              mountPath: /config/site-confs/smokeping_httpd_auth.conf
+              subPath: smokeping_httpd_auth.conf
+            - name: auth-smokeping
+              mountPath: /etc/apache2/passwords
+              subPath: passwords
+          {{- end }}
             - name: fping6
               mountPath: /usr/sbin/fping6
               subPath: fping6
@@ -238,6 +264,8 @@ spec:
           configMap:
             name: {{ include "librenms.fullname" . }}-config
         {{- if .Values.smokeping.enabled }}
+        - name: auth-smokeping
+          emptyDir: {}
         - name: config-smokeping
           emptyDir: {}
         - name: config-smokeping-override

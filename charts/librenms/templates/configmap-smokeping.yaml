@@ -11,6 +11,16 @@ data:
     yasu librenms:librenms php -f /opt/librenms/lnms smokeping:generate --targets > /etc/smokeping/config.d/librenms-targets.conf
     yasu librenms:librenms php -f /opt/librenms/lnms smokeping:generate --probes > /etc/smokeping/config.d/librenms-probes.conf
 
+  smokeping_httpd_auth.conf: |
+    <Directory "/var/www/localhost/smokeping">
+        Options FollowSymLinks
+        AllowOverride AuthConfig
+        AuthType Basic
+        AuthName "Restricted Files"
+        AuthUserFile /etc/apache2/passwords
+        Require valid-user
+    </Directory>
+
   fping6: |
     /usr/sbin/fping -6 $@
 
