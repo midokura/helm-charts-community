@@ -16,7 +16,7 @@ maintainers:
   - name: David Girón
     url: https://github.com/duhow
 
-version: 0.2.13
+version: 0.3.0
 # renovate: datasource=docker depName=librenms/librenms
 appVersion: 22.4.1
 

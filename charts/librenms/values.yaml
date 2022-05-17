@@ -117,6 +117,29 @@ rrdcached:
     port: 42217
   resources: {}
 
+smokeping:
+  enabled: false
+  # -- Set amount of pings
+  pings: 20
+  # -- can be 15min, hourly, daily
+  cron: 15min
+  # -- expose to ingress
+  ingress: true
+  config:
+    general:
+      owner: LinuxServer.io
+      contact: ironicbadger@linuxserver.io
+      mailhost: my.mail.host
+  auth:
+    # -- copy from LibreNMS database as htpasswd
+    librenms: true
+    # -- allow guest access
+    guest: false
+  image:
+    repository: linuxserver/smokeping
+    tag: "2.7.3"
+    pullPolicy: IfNotPresent
+
 mysql:
   install: true
   serviceAccount:

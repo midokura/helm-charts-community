@@ -40,4 +40,18 @@ spec:
               serviceName: {{ $fullName }}
               servicePort: http
               {{- end }}
+        {{- if and (.Values.smokeping.enabled) (.Values.smokeping.ingress) }}
+          - path: "/smokeping/"
+            pathType: Prefix
+            backend:
+              {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $fullName }}-smokeping
+                port:
+                  name: smokeping
+              {{- else }}
+              serviceName: {{ $fullName }}-smokeping
+              servicePort: smokeping
+              {{- end }}
+        {{- end }}
 {{- end }}

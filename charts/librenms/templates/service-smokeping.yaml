@@ -1,0 +1,19 @@
+{{- if .Values.smokeping.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "librenms.fullname" . }}-smokeping
+  labels:
+    {{- include "librenms.app.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.app.service.type }}
+  {{- if eq .Values.app.service.type "ClusterIP" }}
+  clusterIP: None
+  {{- end }}
+  ports:
+    - name: smokeping
+      port: 80
+      protocol: TCP
+  selector:
+    {{- include "librenms.app.selectorLabels" . | nindent 4 }}
+{{- end }}

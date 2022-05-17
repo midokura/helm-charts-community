@@ -1,0 +1,181 @@
+{{- if .Values.smokeping.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "librenms.fullname" . }}-smokeping-config
+  labels:
+    {{- include "librenms.labels" . | nindent 4 }}
+data:
+  smokeping-cron: |
+    #!/usr/bin/env bash
+    yasu librenms:librenms php -f /opt/librenms/lnms smokeping:generate --targets > /etc/smokeping/config.d/librenms-targets.conf
+    yasu librenms:librenms php -f /opt/librenms/lnms smokeping:generate --probes > /etc/smokeping/config.d/librenms-probes.conf
+
+  status_httpd.conf: |
+    LoadModule status_module modules/mod_status.so
+    <Location /server-status>
+         SetHandler server-status
+         Order deny,allow
+         Deny from all
+         Allow from all
+    </Location>
+
+  smokeping_httpd_auth.conf: |
+    <Directory "/var/www/localhost/smokeping">
+        Options FollowSymLinks
+        AllowOverride AuthConfig
+        AuthType Basic
+        AuthName "Restricted Files"
+        AuthUserFile /etc/apache2/passwords
+        Require valid-user
+    </Directory>
+
+  fping6: |
+    /usr/sbin/fping -6 $@
+
+  pathnames: |
+    sendmail = /usr/sbin/ssmtp
+    imgcache = /var/cache/smokeping
+    imgurl   = cache
+    datadir  = /data
+    piddir  = /var/run/smokeping
+    smokemail = /etc/smokeping/smokemail
+    tmail = /etc/smokeping/tmail
+
+  Alerts: |
+    *** Alerts ***
+    to = alertee@address.somewhere
+    from = smokealert@company.xy
+
+    +someloss
+    type = loss
+    # in percent
+    pattern = >0%,*12*,>0%,*12*,>0%
+    comment = loss 3 times  in a row
+
+  Database: |
+    *** Database ***
+
+    step     = 300
+    pings    = {{ .Values.smokeping.pings }}
+
+    # consfn mrhb steps total
+
+    AVERAGE  0.5   1  1008
+    AVERAGE  0.5  12  4320
+        MIN  0.5  12  4320
+        MAX  0.5  12  4320
+    AVERAGE  0.5 144   720
+        MAX  0.5 144   720
+        MIN  0.5 144   720
+
+  General: |
+    *** General ***
+
+    {{- range $key, $val := .Values.smokeping.config.general }}
+    {{ $key }} = {{ $val }}
+    {{- end }}
+    # NOTE: do not put the Image Cache below cgi-bin
+    # since all files under cgi-bin will be executed ... this is not
+    # good for images.
+    {{- if and .Values.ingress.enabled .Values.smokeping.ingress }}
+    cgiurl   = {{ .Values.ingress.tls | ternary "https" "http" }}://{{ .Values.ingress.hostname }}/smokeping/smokeping.cgi
+    {{- else }}
+    cgiurl   = http://localhost/smokeping.cgi
+    {{- end }}
+    # specify this to get syslog logging
+    syslogfacility = local0
+    # each probe is now run in its own process
+    # disable this to revert to the old behaviour
+    # concurrentprobes = no
+
+    @include /config/pathnames
+
+  Presentation: |
+    *** Presentation ***
+
+    template = /etc/smokeping/basepage.html
+    charset  = utf-8
+
+    + charts
+
+    menu = Charts
+    title = The most interesting destinations
+
+    ++ stddev
+    sorter = StdDev(entries=>4)
+    title = Top Standard Deviation
+    menu = Std Deviation
+    format = Standard Deviation %f
+
+    ++ max
+    sorter = Max(entries=>5)
+    title = Top Max Roundtrip Time
+    menu = by Max
+    format = Max Roundtrip Time %f seconds
+
+    ++ loss
+    sorter = Loss(entries=>5)
+    title = Top Packet Loss
+    menu = Loss
+    format = Packets Lost %f
+
+    ++ median
+    sorter = Median(entries=>5)
+    title = Top Median Roundtrip Time
+    menu = by Median
+    format = Median RTT %f seconds
+
+    + overview
+
+    width = 600
+    height = 50
+    range = 10h
+
+    + detail
+
+    width = 600
+    height = 200
+    unison_tolerance = 2
+
+    "Last 3 Hours"    3h
+    "Last 30 Hours"   30h
+    "Last 10 Days"    10d
+    "Last 360 Days"   360d
+
+    #+ hierarchies
+    #++ owner
+    #title = Host Owner
+    #++ location
+    #title = Location
+
+  Slaves: |
+    *** Slaves ***
+    secrets=/etc/smokeping/smokeping_secrets
+    #+boomer
+    #display_name=boomer
+    #color=0000ff
+
+    #+slave2
+    #display_name=another
+    #color=00ff00
+
+# ---
+
+  Probes: |
+    *** Probes ***
+
+    @include /etc/smokeping/config.d/librenms-probes.conf
+
+  Targets: |
+    *** Targets ***
+
+    probe = FPing
+
+    menu = Top
+    title = Network Latency Grapher
+    remark = Welcome to the SmokePing website of <b>LibreNMS</b>.
+
+    @include /etc/smokeping/config.d/librenms-targets.conf
+
+{{- end }}

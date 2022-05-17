@@ -14,6 +14,18 @@ data:
     $config["rrd_dir"] = '/data/rrd';
     $config["distributed_poller"] = {{ gt (.Values.poller.replicaCount | int) 0 | ternary "true" "false" }};
     $config["enable_syslog"] = {{ gt (.Values.syslog.replicaCount | int) 0 | ternary "true" "false" }};
+    {{- if .Values.smokeping.enabled }}
+    $config['smokeping']['integration'] = true;
+    $config['smokeping']['dir'] = '/data/rrd-smokeping';
+    // should be equal to "pings" in your smokeping config
+    $config['smokeping']['pings'] = 20;
+    $config['smokeping']['probes'] = 2;
+    {{- if .Values.smokeping.ingress }}
+    $config['smokeping']['url'] = '/smokeping/';
+    {{- else }}
+    $config['smokeping']['url'] = 'http://{{ include "librenms.fullname" . }}-smokeping/smokeping/';
+    {{- end }}
+    {{- end }}
     {{- if .Values.nagios }}
     $config['show_services'] = true;
     $config['discover_services'] = true;

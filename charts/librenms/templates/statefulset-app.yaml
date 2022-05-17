@@ -54,6 +54,40 @@ spec:
             - name: nagios
               mountPath: /usr/lib/nagios
       {{- end }}
+      {{- if .Values.smokeping.enabled }}
+        - name: smokeping-prepare
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - '-c'
+            - run-parts {{ printf "/etc/periodic/%s/" .Values.smokeping.cron }}
+          envFrom:
+            {{- include "librenms.environment_ref_default" . | nindent 12 }}
+          volumeMounts:
+            # required access to LibreNMS DB config + librenms.log
+            - name: data
+              mountPath: /data
+            - name: config-smokeping
+              mountPath: /etc/smokeping/config.d
+            - name: crontab-smokeping
+              mountPath: {{ printf "/etc/periodic/%s/smokeping-cron" .Values.smokeping.cron }}
+              subPath: smokeping-cron
+      {{- if .Values.smokeping.auth.librenms }}
+        - name: smokeping-auth
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - '-c'
+            - >-
+                mysql -h ${DB_HOST} -u ${DB_USER} --password=${DB_PASSWORD} ${DB_NAME} -sN -e
+                "SELECT CONCAT(username, ':', password) FROM users WHERE auth_type IN('mysql');" > /tmp/apache2/passwords
+          envFrom:
+            {{- include "librenms.environment_ref_default" . | nindent 12 }}
+          volumeMounts:
+            - name: auth-smokeping
+              mountPath: /tmp/apache2
+      {{- end }}
+      {{- end }}
       containers:
         - name: app
           securityContext:
@@ -113,8 +147,76 @@ spec:
               mountPath: /var/lib/rrdcached/journal
             - name: config
               mountPath: /opt/librenms/config.d
+            {{- if .Values.smokeping.enabled }}
+            - name: config-smokeping
+              mountPath: /etc/smokeping/config.d
+            - name: crontab-smokeping
+              mountPath: {{ printf "/etc/periodic/%s/smokeping-cron" .Values.smokeping.cron }}
+              subPath: smokeping-cron
+            {{- end }}
             - name: nagios
               mountPath: /usr/lib/nagios
+        {{- if .Values.smokeping.enabled }}
+        - name: smokeping
+          securityContext:
+            {{- toYaml .Values.app.securityContext | nindent 12 }}
+          {{- with .Values.smokeping.image }}
+          image: "{{ .repository }}:{{ .tag }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          envFrom:
+            {{ include "librenms.environment_ref_default" . | nindent 12 }}
+          ports:
+            - name: smokeping
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /server-status
+              port: smokeping
+            periodSeconds: 15
+            failureThreshold: 4
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /server-status
+              port: smokeping
+            periodSeconds: 10
+            failureThreshold: 4
+          startupProbe:
+            httpGet:
+              path: /server-status
+              port: smokeping
+            periodSeconds: 5
+            failureThreshold: 120
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              subPath: rrd-smokeping
+            - name: config-smokeping
+              mountPath: /etc/smokeping/config.d
+          {{- range tuple "Probes" "Targets" "Database" "General" }}
+            - name: config-smokeping-override
+              mountPath: /config/{{ . }}
+              subPath: {{ . }}
+          {{- end }}
+            - name: config-smokeping-override
+              mountPath: /config/site-confs/status_httpd.conf
+              subPath: status_httpd.conf
+          {{- if and (not .Values.smokeping.auth.guest) }}
+            - name: config-smokeping-override
+              mountPath: /config/site-confs/smokeping_httpd_auth.conf
+              subPath: smokeping_httpd_auth.conf
+            - name: auth-smokeping
+              mountPath: /etc/apache2/passwords
+              subPath: passwords
+          {{- end }}
+            - name: fping6
+              mountPath: /usr/sbin/fping6
+              subPath: fping6
+        {{- end }}
         - name: rrdcached
           securityContext:
             {{- toYaml .Values.rrdcached.securityContext | nindent 12 }}
@@ -137,6 +239,11 @@ spec:
             - name: data
               mountPath: /data/db
               subPath: rrd
+          {{- if .Values.smokeping.enabled }}
+            - name: data
+              mountPath: /data/db/-smokeping
+              subPath: rrd-smokeping
+          {{- end }}
             - name: rrd-journal
               mountPath: /data/journal
 
@@ -156,6 +263,27 @@ spec:
         - name: config
           configMap:
             name: {{ include "librenms.fullname" . }}-config
+        {{- if .Values.smokeping.enabled }}
+        - name: auth-smokeping
+          emptyDir: {}
+        - name: config-smokeping
+          emptyDir: {}
+        - name: config-smokeping-override
+          configMap:
+            name: {{ include "librenms.fullname" . }}-smokeping-config
+        # fping6 wrapper does not exist, create it
+        - name: fping6
+          configMap:
+            name: {{ include "librenms.fullname" . }}-smokeping-config
+            defaultMode: 0755
+            items:
+              - key: fping6
+                path: fping6
+        - name: crontab-smokeping
+          configMap:
+            name: {{ include "librenms.fullname" . }}-smokeping-config
+            defaultMode: 0755
+        {{- end }}
         - name: rrd-journal
           emptyDir: {}
         - name: nagios
