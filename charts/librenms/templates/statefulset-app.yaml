@@ -84,9 +84,6 @@ spec:
           envFrom:
             {{- include "librenms.environment_ref_default" . | nindent 12 }}
           volumeMounts:
-            # required access to LibreNMS DB config + librenms.log
-            - name: data
-              mountPath: /data
             - name: auth-smokeping
               mountPath: /tmp/apache2
       {{- end }}
@@ -274,7 +271,6 @@ spec:
         - name: config-smokeping-override
           configMap:
             name: {{ include "librenms.fullname" . }}-smokeping-config
-            # fping6 wrapper does not exist, create it
         # fping6 wrapper does not exist, create it
         - name: fping6
           configMap:
