@@ -182,7 +182,7 @@ spec:
               subPath: rrd-smokeping
             - name: config-smokeping
               mountPath: /etc/smokeping/config.d
-          {{- range tuple "Probes" "Targets" "Database" }}
+          {{- range tuple "Probes" "Targets" "Database" "General" }}
             - name: config-smokeping-override
               mountPath: /config/{{ . }}
               subPath: {{ . }}

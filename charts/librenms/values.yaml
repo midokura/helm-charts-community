@@ -125,6 +125,11 @@ smokeping:
   cron: 15min
   # -- expose to ingress
   ingress: true
+  config:
+    general:
+      owner: LinuxServer.io
+      contact: ironicbadger@linuxserver.io
+      mailhost: my.mail.host
   image:
     repository: linuxserver/smokeping
     tag: "2.7.3"

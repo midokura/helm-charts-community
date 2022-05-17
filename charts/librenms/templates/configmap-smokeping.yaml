@@ -53,13 +53,17 @@ data:
   General: |
     *** General ***
 
-    owner    = LinuxServer.io
-    contact  = ironicbadger@linuxserver.io
-    mailhost = my.mail.host
+    {{- range $key, $val := .Values.smokeping.config.general }}
+    {{ $key }} = {{ $val }}
+    {{- end }}
     # NOTE: do not put the Image Cache below cgi-bin
     # since all files under cgi-bin will be executed ... this is not
     # good for images.
+    {{- if and .Values.ingress.enabled .Values.smokeping.ingress }}
+    cgiurl   = {{ .Values.ingress.tls | ternary "https" "http" }}://{{ .Values.ingress.hostname }}/smokeping/smokeping.cgi
+    {{- else }}
     cgiurl   = http://localhost/smokeping.cgi
+    {{- end }}
     # specify this to get syslog logging
     syslogfacility = local0
     # each probe is now run in its own process
