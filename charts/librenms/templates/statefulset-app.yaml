@@ -175,20 +175,20 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /smokeping/
+              path: /server-status
               port: smokeping
             periodSeconds: 15
             failureThreshold: 4
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
-              path: /smokeping/
+              path: /server-status
               port: smokeping
             periodSeconds: 10
             failureThreshold: 4
           startupProbe:
             httpGet:
-              path: /smokeping/
+              path: /server-status
               port: smokeping
             periodSeconds: 5
             failureThreshold: 120
@@ -205,6 +205,9 @@ spec:
               mountPath: /config/{{ . }}
               subPath: {{ . }}
           {{- end }}
+            - name: config-smokeping-override
+              mountPath: /config/site-confs/status_httpd.conf
+              subPath: status_httpd.conf
           {{- if and (not .Values.smokeping.auth.guest) }}
             - name: config-smokeping-override
               mountPath: /config/site-confs/smokeping_httpd_auth.conf
