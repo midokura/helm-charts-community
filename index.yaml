@@ -422,6 +422,27 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/sshportal-0.1.0/sshportal-0.1.0.tgz
     version: 0.1.0
+  unifi:
+  - apiVersion: v2
+    appVersion: 7.1.65
+    created: "2022-05-20T13:47:03.355543815Z"
+    description: Manage all your Unifi devices through a central site.
+    digest: fe3911ff636ec1c1f69ed068e622c8cae20db1ffa4f76198d2a007d5e263066f
+    home: https://github.com/midokura/helm-charts-community/tree/main/unifi-controller
+    icon: https://avatars.githubusercontent.com/u/3934889?s=200
+    keywords:
+    - nms
+    - network
+    - monitoring
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: unifi
+    sources:
+    - https://hub.docker.com/r/linuxserver/unifi-controller
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/unifi-0.0.1/unifi-0.0.1.tgz
+    version: 0.0.1
   webhook-site:
   - apiVersion: v2
     appVersion: "1.2"
@@ -498,4 +519,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2022-05-17T13:41:20.074858786Z"
+generated: "2022-05-20T13:47:03.355583715Z"
