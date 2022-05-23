@@ -17,6 +17,19 @@ data:
     automation: !include automations.yaml
     script: !include scripts.yaml
     scene: !include scenes.yaml
+{{- if .Values.ingress.enabled }}
+    http:
+      use_x_forwarded_for: true
+      cors_allowed_origins:
+        - https://{{ .Values.ingress.hostname }}
+      # TODO Improve!
+      trusted_proxies:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+      ip_ban_enabled: false
+      login_attempts_threshold: 5
+{{- end }}
 {{- if .Values.mysql.install }}
     recorder:
     {{- with .Values.mysql.auth }}
