@@ -19,5 +19,5 @@ appVersion: "1.2"
 dependencies:
   - name: redis
     repository: https://charts.bitnami.com/bitnami
-    version: 16.4.5
+    version: 16.13.2
     condition: redis.install
