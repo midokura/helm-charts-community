@@ -11,8 +11,9 @@ spec:
       {{- include "nginx-static.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        kubectl.kubernetes.io/default-container: nginx
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -119,6 +120,46 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+        {{- if and (.Values.git.enabled) (.Values.git.keep) (.Values.git.updater.enabled) }}
+        - name: updater
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- with .Values.image }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}{{ if .digest }}@{{ .digest }}{{ end }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          env:
+            {{- with .Values.git }}
+            - name: GIT_SERVER
+              value: {{ .server | quote }}
+            - name: WAITING_TIME
+              value: {{ .updater.interval | quote }}
+            {{- end }}
+          command:
+            - /bin/sh
+            - '-c'
+            - >
+                apt update;
+                apt install --no-install-recommends -y git openssh-client;
+                mkdir -p ~/.ssh;
+                eval $(ssh-agent);
+                ssh-add /ssh/id_rsa;
+                ssh-keyscan ${GIT_SERVER} 2>/dev/null > ~/.ssh/known_hosts;
+                git config --global pull.ff only;
+                (while true; do date && git pull && touch /tmp/ready; sleep ${WAITING_TIME}; done)
+          readinessProbe:
+            exec:
+              command:
+                - /usr/bin/stat
+                - "-c '%n'"
+                - /tmp/ready
+          workingDir: /usr/share/nginx/html/{{ .Values.git.targetDirectory }}
+          volumeMounts:
+            - name: nginx-html
+              mountPath: /usr/share/nginx/html
+            - name: ssh-key
+              mountPath: /ssh
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

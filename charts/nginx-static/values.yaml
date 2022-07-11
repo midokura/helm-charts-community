@@ -72,7 +72,7 @@ livenessProbe:
   periodSeconds: 10
   timeoutSeconds: 1
 
-#-- (string, bool) Additional config in nginx server config definition.
+# -- (string, bool) Additional config in nginx server config definition.
 # If false, then ConfigMap won't be mounted
 # If string, content will be appended to ConfigMap
 configNginx: true
@@ -96,3 +96,9 @@ git:
   # -- Move git folder to a subfolder or keep content in main folder.
   # Defaults to empty (use main folder)
   targetDirectory: ""
+  updater:
+    # -- Add a sidecar container that pulls content from Git.
+    # Requires keeping Git folder.
+    enabled: false
+    # -- Seconds to wait before pulling content again.
+    interval: 90
