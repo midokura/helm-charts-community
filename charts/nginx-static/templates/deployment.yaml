@@ -43,6 +43,10 @@ spec:
               value: {{ required "Please provide repository to clone." .repository | quote }}
             - name: GIT_BRANCH
               value: {{ .branch | quote }}
+            {{- if .targetDirectory }}
+            - name: TARGETDIR
+              value: {{ .targetDirectory | quote }}
+            {{- end }}
             {{- end }}
             - name: TEMPDIR
               value: /tmp/git-tmpdir
@@ -58,7 +62,8 @@ spec:
                 ssh-keyscan ${GIT_SERVER} 2>/dev/null > ~/.ssh/known_hosts;
                 git clone -b ${GIT_BRANCH} --depth 1 git@${GIT_SERVER}:${GIT_REPOSITORY} ${TEMPDIR};
                 rm -rf ${TEMPDIR}/.git;
-                mv ${TEMPDIR}/* /usr/share/nginx/html/
+                mkdir -p /usr/share/nginx/html/${TARGETDIR};
+                mv ${TEMPDIR}/* /usr/share/nginx/html/${TARGETDIR}
           volumeMounts:
             - name: nginx-html
               mountPath: /usr/share/nginx/html

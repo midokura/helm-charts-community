@@ -66,4 +66,7 @@ git:
   #   -n YOURNAMESPACE yourname-sshkey
   sshKeySecret: ""
   repository: ""
-  branch: "main"
+  branch: main
+  # -- Move git folder to a subfolder or keep content in main folder.
+  # Defaults to empty (use main folder)
+  targetDirectory: ""
