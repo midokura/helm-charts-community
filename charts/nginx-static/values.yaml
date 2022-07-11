@@ -88,6 +88,8 @@ git:
   sshKeySecret: ""
   repository: ""
   branch: main
+  # -- Keep the git directory after cloning. If false, deletes before copying to nginx.
+  keep: true
   # -- Number of commits to fetch. 0 indicates all history for all branches and tags.
   # Defaults to 1 (download latest commit only)
   depth: 1

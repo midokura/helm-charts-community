@@ -63,9 +63,8 @@ spec:
                 ssh-add /ssh/id_rsa;
                 ssh-keyscan ${GIT_SERVER} 2>/dev/null > ~/.ssh/known_hosts;
                 git clone -b ${GIT_BRANCH} --depth ${GIT_DEPTH} ${GIT_USER}@${GIT_SERVER}:${GIT_REPOSITORY} ${TEMPDIR};
-                rm -rf ${TEMPDIR}/.git;
                 mkdir -p /usr/share/nginx/html/${TARGETDIR};
-                mv ${TEMPDIR}/* /usr/share/nginx/html/${TARGETDIR}
+                mv ${TEMPDIR}/* {{ .Values.git.keep | ternary "${TEMPDIR}/.git" "" }} /usr/share/nginx/html/${TARGETDIR}
           volumeMounts:
             - name: nginx-html
               mountPath: /usr/share/nginx/html
