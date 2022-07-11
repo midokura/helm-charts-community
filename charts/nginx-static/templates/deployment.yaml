@@ -43,6 +43,8 @@ spec:
               value: {{ required "Please provide repository to clone." .repository | quote }}
             - name: GIT_BRANCH
               value: {{ .branch | quote }}
+            - name: GIT_DEPTH
+              value: {{ .depth | quote }}
             {{- if .targetDirectory }}
             - name: TARGETDIR
               value: {{ .targetDirectory | quote }}
@@ -60,7 +62,7 @@ spec:
                 eval $(ssh-agent);
                 ssh-add /ssh/id_rsa;
                 ssh-keyscan ${GIT_SERVER} 2>/dev/null > ~/.ssh/known_hosts;
-                git clone -b ${GIT_BRANCH} --depth 1 ${GIT_USER}@${GIT_SERVER}:${GIT_REPOSITORY} ${TEMPDIR};
+                git clone -b ${GIT_BRANCH} --depth ${GIT_DEPTH} ${GIT_USER}@${GIT_SERVER}:${GIT_REPOSITORY} ${TEMPDIR};
                 rm -rf ${TEMPDIR}/.git;
                 mkdir -p /usr/share/nginx/html/${TARGETDIR};
                 mv ${TEMPDIR}/* /usr/share/nginx/html/${TARGETDIR}
