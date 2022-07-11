@@ -109,6 +109,11 @@ spec:
           {{- end }}
           {{- end }}
           volumeMounts:
+          {{- if .Values.configNginx }}
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+          {{- end }}
           {{- with .Values.git.enabled }}
             - name: nginx-html
               mountPath: /usr/share/nginx/html
@@ -134,6 +139,11 @@ spec:
           {{- if .Values.useMemoryStorage }}
             medium: Memory
           {{- end }}
+        {{- if .Values.configNginx }}
+        - name: nginx-conf
+          configMap:
+            name: {{ include "nginx-static.fullname" . }}-config
+        {{- end }}
         - name: ssh-key
           secret:
             defaultMode: 0400
