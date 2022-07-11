@@ -42,13 +42,13 @@ ingress:
   hostname: ""
   tls: false
 
-resources:
-  limits:
-    cpu: 400m
-    memory: 100Mi
-  requests:
-    cpu: 10m
-    memory: 10Mi
+resources: {}
+#  limits:
+#    cpu: 400m
+#    memory: 100Mi
+#  requests:
+#    cpu: 10m
+#    memory: 10Mi
 
 nodeSelector: {}
 
