@@ -56,6 +56,22 @@ tolerations: []
 
 affinity: {}
 
+readinessProbe:
+  enabled: false
+  path: "/"
+  failureThreshold: 3
+  successThreshold: 1
+  periodSeconds: 10
+  timeoutSeconds: 1
+
+livenessProbe:
+  enabled: true
+  path: "/"
+  failureThreshold: 3
+  successThreshold: 1
+  periodSeconds: 10
+  timeoutSeconds: 1
+
 useMemoryStorage: false
 git:
   enabled: false
