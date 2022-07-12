@@ -424,6 +424,26 @@ entries:
     version: 0.1.0
   unifi:
   - apiVersion: v2
+    appVersion: 7.1.66
+    created: "2022-07-12T07:32:34.370025341Z"
+    description: Manage all your Unifi devices through a central site.
+    digest: 7cf3b7cfcb773ea7e11a0d5029726f5301275ea12a4de2239e71bbb99fe2437c
+    home: https://github.com/midokura/helm-charts-community/tree/main/unifi-controller
+    icon: https://avatars.githubusercontent.com/u/3934889?s=200
+    keywords:
+    - nms
+    - network
+    - monitoring
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: unifi
+    sources:
+    - https://hub.docker.com/r/linuxserver/unifi-controller
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/unifi-0.0.2/unifi-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
     appVersion: 7.1.65
     created: "2022-05-20T13:47:03.355543815Z"
     description: Manage all your Unifi devices through a central site.
@@ -519,4 +539,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2022-05-20T13:47:03.355583715Z"
+generated: "2022-07-12T07:32:34.370059441Z"
