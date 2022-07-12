@@ -11,8 +11,9 @@ spec:
       {{- include "nginx-static.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        kubectl.kubernetes.io/default-container: nginx
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -43,6 +44,12 @@ spec:
               value: {{ required "Please provide repository to clone." .repository | quote }}
             - name: GIT_BRANCH
               value: {{ .branch | quote }}
+            - name: GIT_DEPTH
+              value: {{ .depth | quote }}
+            {{- if .targetDirectory }}
+            - name: TARGETDIR
+              value: {{ .targetDirectory | quote }}
+            {{- end }}
             {{- end }}
             - name: TEMPDIR
               value: /tmp/git-tmpdir
@@ -56,9 +63,9 @@ spec:
                 eval $(ssh-agent);
                 ssh-add /ssh/id_rsa;
                 ssh-keyscan ${GIT_SERVER} 2>/dev/null > ~/.ssh/known_hosts;
-                git clone -b ${GIT_BRANCH} --depth 1 git@${GIT_SERVER}:${GIT_REPOSITORY} ${TEMPDIR};
-                rm -rf ${TEMPDIR}/.git;
-                mv ${TEMPDIR}/* /usr/share/nginx/html/
+                git clone -b ${GIT_BRANCH} --depth ${GIT_DEPTH} ${GIT_USER}@${GIT_SERVER}:${GIT_REPOSITORY} ${TEMPDIR};
+                mkdir -p /usr/share/nginx/html/${TARGETDIR};
+                mv ${TEMPDIR}/* {{ .Values.git.keep | ternary "${TEMPDIR}/.git" "" }} /usr/share/nginx/html/${TARGETDIR}
           volumeMounts:
             - name: nginx-html
               mountPath: /usr/share/nginx/html
@@ -77,21 +84,82 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+          {{- if .Values.livenessProbe.enabled }}
+          {{- with .Values.livenessProbe }}
           livenessProbe:
             httpGet:
-              path: /
+              path: {{ .path | default "/" }}
               port: http
+            failureThreshold: {{ .failureThreshold }}
+            successThreshold: {{ .successThreshold }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          {{- with .Values.readinessProbe }}
           readinessProbe:
             httpGet:
-              path: /
+              path: {{ .path | default "/" }}
               port: http
+            failureThreshold: {{ .failureThreshold }}
+            successThreshold: {{ .successThreshold }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
+          {{- end }}
+          {{- end }}
           volumeMounts:
+          {{- if .Values.configNginx }}
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+          {{- end }}
           {{- with .Values.git.enabled }}
             - name: nginx-html
               mountPath: /usr/share/nginx/html
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+        {{- if and (.Values.git.enabled) (.Values.git.keep) (.Values.git.updater.enabled) }}
+        - name: updater
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- with .Values.image }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}{{ if .digest }}@{{ .digest }}{{ end }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          env:
+            {{- with .Values.git }}
+            - name: GIT_SERVER
+              value: {{ .server | quote }}
+            - name: WAITING_TIME
+              value: {{ .updater.interval | quote }}
+            {{- end }}
+          command:
+            - /bin/sh
+            - '-c'
+            - >
+                apt update;
+                apt install --no-install-recommends -y git openssh-client;
+                mkdir -p ~/.ssh;
+                eval $(ssh-agent);
+                ssh-add /ssh/id_rsa;
+                ssh-keyscan ${GIT_SERVER} 2>/dev/null > ~/.ssh/known_hosts;
+                git config --global pull.ff only;
+                (while true; do date && git pull && touch /tmp/ready; sleep ${WAITING_TIME}; done)
+          readinessProbe:
+            exec:
+              command:
+                - /usr/bin/stat
+                - "-c '%n'"
+                - /tmp/ready
+          workingDir: /usr/share/nginx/html/{{ .Values.git.targetDirectory }}
+          volumeMounts:
+            - name: nginx-html
+              mountPath: /usr/share/nginx/html
+            - name: ssh-key
+              mountPath: /ssh
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -111,6 +179,11 @@ spec:
           {{- if .Values.useMemoryStorage }}
             medium: Memory
           {{- end }}
+        {{- if .Values.configNginx }}
+        - name: nginx-conf
+          configMap:
+            name: {{ include "nginx-static.fullname" . }}-config
+        {{- end }}
         - name: ssh-key
           secret:
             defaultMode: 0400
