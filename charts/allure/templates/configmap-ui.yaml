@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: {{ include "allure.fullname" . }}-ui
   labels:
-    {{- include "allure.labels" . | nindent 4 }}
+    {{- include "allure-ui.labels" . | nindent 4 }}
 data:
   ALLURE_DOCKER_PUBLIC_API_URL: {{ .Values.domain }}

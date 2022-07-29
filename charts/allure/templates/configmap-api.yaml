@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "allure.fullname" . }}-api
   labels:
-    {{- include "allure.labels" . | nindent 4 }}
+    {{- include "allure-api.labels" . | nindent 4 }}
 data:
   CHECK_RESULTS_EVERY_SECONDS: {{ .Values.updateFrequency | quote }}
   KEEP_HISTORY: {{ .Values.keepHistory | int | quote }}

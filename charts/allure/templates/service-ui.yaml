@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "allure.fullname" . }}-ui
   labels:
-    {{- include "allure.labels" . | nindent 4 }}
+    {{- include "allure-ui.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:

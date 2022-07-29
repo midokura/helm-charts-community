@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "allure.fullname" . }}-api
   labels:
-    {{- include "allure.labels" . | nindent 4 }}
+    {{- include "allure-api.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -16,7 +16,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "allure.selectorLabels" . | nindent 8 }}
+        {{- include "allure-api.selectorLabels" . | nindent 8 }}
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}

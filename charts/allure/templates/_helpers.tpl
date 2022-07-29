@@ -31,19 +31,31 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
-Common labels
+API Common labels
 */}}
-{{- define "allure.labels" -}}
+{{- define "allure-api.labels" -}}
 helm.sh/chart: {{ include "allure.chart" . }}
-{{ include "allure.selectorLabels" . }}
+{{ include "allure-api.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/version: {{ .Values.imageAPI.tag | default .Chart.AppVersion }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
-Selector labels
+UI Common labels
+*/}}
+{{- define "allure-ui.labels" -}}
+helm.sh/chart: {{ include "allure.chart" . }}
+{{ include "allure-ui.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Values.imageUI.tag }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+API Selector labels
 */}}
 {{- define "allure-api.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "allure.name" . }}
@@ -51,6 +63,9 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/component: api
 {{- end }}
 
+{{/*
+UI Selector labels
+*/}}
 {{- define "allure-ui.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "allure.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
