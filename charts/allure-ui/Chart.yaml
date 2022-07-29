@@ -1,6 +1,7 @@
 apiVersion: v2
 name: allure-ui
-description: A Helm chart for Kubernetes
+description: A Helm chart for Allure Report UI
+
 
 # A chart can be either an 'application' or a 'library' chart.
 #
