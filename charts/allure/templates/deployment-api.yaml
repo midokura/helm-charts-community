@@ -8,7 +8,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "allure.selectorLabels" . | nindent 6 }}
+      {{- include "allure-api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -24,7 +24,7 @@ spec:
         - name: {{ .Chart.Name }}-api
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.imageAPI.repository }}:{{ .Values.imageAPI.tag }}"
+          image: "{{ .Values.imageAPI.repository }}:{{ .Values.imageAPI.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.imageAPI.pullPolicy }}
           envFrom:
             - configMapRef:

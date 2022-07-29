@@ -14,7 +14,7 @@ imageUI:
   repository: frankescobar/allure-docker-service-ui
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "7.0.3"
 
 nameOverride: ""
 fullnameOverride: ""

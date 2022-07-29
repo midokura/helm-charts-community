@@ -45,9 +45,16 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "allure.selectorLabels" -}}
+{{- define "allure-api.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "allure.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/component: api
+{{- end }}
+
+{{- define "allure-ui.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "allure.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/component: ui
 {{- end }}
 
 {{/*
