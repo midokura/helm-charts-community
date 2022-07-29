@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "allure.fullname" . }}-api
+  labels:
+    {{- include "allure.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "allure.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "allure.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-api
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.imageAPI.repository }}:{{ .Values.imageAPI.tag }}"
+          imagePullPolicy: {{ .Values.imageAPI.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "allure.fullname" . }}-api
+            - secretRef:
+                name: {{ include "allure.fullname" . }}-api
+          ports:
+            - name: api
+              containerPort: 5050
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /allure-docker-service/version
+              port: api
+          readinessProbe:
+            httpGet:
+              path: /allure-docker-service/version
+              port: api

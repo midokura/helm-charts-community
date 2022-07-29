@@ -4,8 +4,14 @@
 
 replicaCount: 1
 
-image:
+imageAPI:
   repository: frankescobar/allure-docker-service
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imageUI:
+  repository: frankescobar/allure-docker-service-ui
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -39,3 +45,5 @@ credentials:
   viewer:
     username: viewer
     password: viewer
+
+domain: your-domain.com
