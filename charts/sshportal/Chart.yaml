@@ -13,5 +13,5 @@ sources:
 dependencies:
   - name: mariadb
     alias: mysql
-    version: 10.3.7
+    version: 10.5.1
     repository: https://charts.bitnami.com/bitnami
