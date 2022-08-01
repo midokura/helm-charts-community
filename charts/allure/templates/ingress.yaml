@@ -1,4 +1,3 @@
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -22,7 +21,7 @@ spec:
                 name: {{ include "allure.fullname" . }}-api
                 port:
                   number: {{ .Values.service.port }}
-          - path: /allure-docker-service-ui/?(.*)
+          - path: /?(.*)
             pathType: Prefix
             backend:
               service:
