@@ -2,31 +2,47 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
+replicaCount:
+  ui: 1
+  api: 1
 
-imageAPI:
-  repository: frankescobar/allure-docker-service
-  pullPolicy: Always
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
-
-imageUI:
-  repository: frankescobar/allure-docker-service-ui
-  pullPolicy: Always
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "7.0.3"
+image:
+  ui:
+    repository: frankescobar/allure-docker-service-ui
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "7.0.3"
+  api:
+    repository: frankescobar/allure-docker-service
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
 
 nameOverride: ""
 fullnameOverride: ""
 
-podAnnotations: {}
+podAnnotations:
+  ui: {}
+  api: {}
+
+serviceAnnotations:
+  ui: {}
+  api: {}
 
 podSecurityContext: {}
   # fsGroup: 2000
 
+resources:
+  ui: {}
+  api: {}
+
 service:
-  type: ClusterIP
-  port: 80
+  ui:
+    type: ClusterIP
+    port: 80
+  api:
+    type: ClusterIP
+    port: 80
 
 keepHistory: true
 updateFrequency: NONE
@@ -46,4 +62,4 @@ credentials:
     username: viewer
     password: viewer
 
-domain: your-domain.com
+domain: test.sts.midocloud.net

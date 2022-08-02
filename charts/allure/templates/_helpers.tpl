@@ -37,7 +37,7 @@ API Common labels
 helm.sh/chart: {{ include "allure.chart" . }}
 {{ include "allure-api.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Values.imageAPI.tag | default .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Values.image.api.tag | default .Chart.AppVersion }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
@@ -49,7 +49,7 @@ UI Common labels
 helm.sh/chart: {{ include "allure.chart" . }}
 {{ include "allure-ui.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Values.imageUI.tag }}
+app.kubernetes.io/version: {{ .Values.image.ui.tag }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
@@ -70,15 +70,4 @@ UI Selector labels
 app.kubernetes.io/name: {{ include "allure.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/component: ui
-{{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "allure.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "allure.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
 {{- end }}

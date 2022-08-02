@@ -5,13 +5,13 @@ metadata:
   labels:
     {{- include "allure-api.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.replicaCount.api }}
   selector:
     matchLabels:
       {{- include "allure-api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with .Values.podAnnotations.api }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -24,8 +24,8 @@ spec:
         - name: {{ .Chart.Name }}-api
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.imageAPI.repository }}:{{ .Values.imageAPI.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.imageAPI.pullPolicy }}
+          image: "{{ .Values.image.api.repository }}:{{ .Values.image.api.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.api.pullPolicy }}
           envFrom:
             - configMapRef:
                 name: {{ include "allure.fullname" . }}-api
@@ -43,3 +43,5 @@ spec:
             httpGet:
               path: /allure-docker-service/version
               port: api
+          resources:
+            {{- toYaml .Values.resources.api | nindent 12 }}

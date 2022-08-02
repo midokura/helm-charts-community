@@ -4,10 +4,14 @@ metadata:
   name: {{ include "allure.fullname" . }}-api
   labels:
     {{- include "allure-api.labels" . | nindent 4 }}
+  {{- with .Values.serviceAnnotations.api }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.service.api.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.service.api.port }}
       targetPort: api
       protocol: TCP
       name: api
