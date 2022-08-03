@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "allure.fullname" . }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: {{ .Values.domain }}-tls
+      hosts:
+        - {{ .Values.domain }}
+  rules:
+    - host: {{ .Values.domain }}
+      http:
+        paths:
+          - path: /allure-docker-service/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "allure.fullname" . }}-api
+                port:
+                  number: {{ .Values.service.api.port }}
+          - path: /allure-docker-service-ui/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "allure.fullname" . }}-ui
+                port:
+                  number: {{ .Values.service.ui.port }}
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "allure.fullname" . }}-ui
+                port:
+                  number: {{ .Values.service.ui.port }}
