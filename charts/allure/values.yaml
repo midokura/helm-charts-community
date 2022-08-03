@@ -25,10 +25,6 @@ podAnnotations:
   ui: {}
   api: {}
 
-serviceAnnotations:
-  ui: {}
-  api: {}
-
 podSecurityContext: {}
   # fsGroup: 2000
 
@@ -38,11 +34,15 @@ resources:
 
 service:
   ui:
+    name: ui
     type: ClusterIP
     port: 80
+    annotations: {}
   api:
+    name: api
     type: ClusterIP
     port: 80
+    annotations: {}
 
 keepHistory: true
 updateFrequency: NONE
@@ -54,12 +54,6 @@ securityContext:
   runAsUser: 1000
   runAsGroup: 1000
 
-credentials:
-  admin:
-    username: admin
-    password: admin
-  viewer:
-    username: viewer
-    password: viewer
+credentials: api-credentials
 
-domain: test.sts.midocloud.net
+domain: https://my-domain.com
