@@ -25,10 +25,6 @@ podAnnotations:
   ui: {}
   api: {}
 
-serviceAnnotations:
-  ui: {}
-  api: {}
-
 podSecurityContext: {}
   # fsGroup: 2000
 
@@ -40,9 +36,11 @@ service:
   ui:
     type: ClusterIP
     port: 80
+    annotations: {}
   api:
     type: ClusterIP
     port: 80
+    annotations: {}
 
 keepHistory: true
 updateFrequency: NONE
@@ -54,12 +52,15 @@ securityContext:
   runAsUser: 1000
   runAsGroup: 1000
 
-credentials:
-  admin:
-    username: admin
-    password: admin
-  viewer:
-    username: viewer
-    password: viewer
+credentials: api-credentials
 
-domain: test.sts.midocloud.net
+ingress:
+  enabled: false
+  tls: false
+  existingSecret: ""
+  ingressClassName: nginx
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: letsencrypt
+
+hostname: allure-domain.com

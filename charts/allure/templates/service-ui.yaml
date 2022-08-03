@@ -4,7 +4,7 @@ metadata:
   name: {{ include "allure.fullname" . }}-ui
   labels:
     {{- include "allure-ui.labels" . | nindent 4 }}
-  {{- with .Values.serviceAnnotations.ui }}
+  {{- with .Values.service.ui.annotations }}
   annotations:
     {{- toYaml . | nindent 8 }}
   {{- end }}
