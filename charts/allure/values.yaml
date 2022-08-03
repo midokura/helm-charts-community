@@ -1,0 +1,65 @@
+# Default values for allure.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount:
+  ui: 1
+  api: 1
+
+image:
+  ui:
+    repository: frankescobar/allure-docker-service-ui
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "7.0.3"
+  api:
+    repository: frankescobar/allure-docker-service
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations:
+  ui: {}
+  api: {}
+
+serviceAnnotations:
+  ui: {}
+  api: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+resources:
+  ui: {}
+  api: {}
+
+service:
+  ui:
+    type: ClusterIP
+    port: 80
+  api:
+    type: ClusterIP
+    port: 80
+
+keepHistory: true
+updateFrequency: NONE
+
+securityEnabled: true
+publicViewerEndpoint: false
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+
+credentials:
+  admin:
+    username: admin
+    password: admin
+  viewer:
+    username: viewer
+    password: viewer
+
+domain: test.sts.midocloud.net

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "allure.fullname" . }}-ui
+  labels:
+    {{- include "allure-ui.labels" . | nindent 4 }}
+  {{- with .Values.serviceAnnotations.ui }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.ui.type }}
+  ports:
+    - port: {{ .Values.service.ui.port }}
+      targetPort: ui
+      protocol: TCP
+      name: ui
+  selector:
+    {{- include "allure-ui.selectorLabels" . | nindent 4 }}
