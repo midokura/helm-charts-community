@@ -34,12 +34,10 @@ resources:
 
 service:
   ui:
-    name: ui
     type: ClusterIP
     port: 80
     annotations: {}
   api:
-    name: api
     type: ClusterIP
     port: 80
     annotations: {}
@@ -56,4 +54,13 @@ securityContext:
 
 credentials: api-credentials
 
-domain: https://my-domain.com
+ingress:
+  enabled: false
+  tls: false
+  existingSecret: ""
+  ingressClassName: nginx
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: letsencrypt
+
+hostname: allure-domain.com

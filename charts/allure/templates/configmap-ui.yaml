@@ -5,4 +5,4 @@ metadata:
   labels:
     {{- include "allure-ui.labels" . | nindent 4 }}
 data:
-  ALLURE_DOCKER_PUBLIC_API_URL: {{ .Values.domain }}
+  ALLURE_DOCKER_PUBLIC_API_URL: https://{{ .Values.hostname }}

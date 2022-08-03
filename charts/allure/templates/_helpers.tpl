@@ -31,6 +31,19 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
+Common labels
+*/}}
+{{- define "allure.labels" -}}
+helm.sh/chart: {{ include "allure.chart" . }}
+{{ include "allure-api.selectorLabels" . }}
+{{ include "allure-ui.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Values.image.api.tag | default .Chart.AppVersion }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
 API Common labels
 */}}
 {{- define "allure-api.labels" -}}
