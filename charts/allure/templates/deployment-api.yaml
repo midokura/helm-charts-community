@@ -30,7 +30,7 @@ spec:
             - configMapRef:
                 name: {{ include "allure.fullname" . }}-api
             - secretRef:
-                name: {{ include "allure.fullname" . }}-api
+                name: {{ .Values.credentials }}
           ports:
             - name: api
               containerPort: 5050
