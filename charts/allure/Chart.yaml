@@ -1,9 +1,7 @@
 apiVersion: v2
 name: allure
+type: application
 description: A Helm chart for Allure Report
 
-type: application
-
-version: 0.0.1
-
+version: 0.1.0
 appVersion: "2.17.2"

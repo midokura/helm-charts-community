@@ -1,48 +1,37 @@
-# Default values for allure.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-replicaCount:
-  ui: 1
-  api: 1
-
-image:
-  ui:
-    repository: frankescobar/allure-docker-service-ui
-    pullPolicy: Always
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: "7.0.3"
-  api:
-    repository: frankescobar/allure-docker-service
-    pullPolicy: Always
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: ""
 
 nameOverride: ""
 fullnameOverride: ""
 
-podAnnotations:
-  ui: {}
-  api: {}
+ui:
+  replicaCount: 1
+  image:
+    repository: frankescobar/allure-docker-service-ui
+    tag: "7.0.3"
+    digest: sha256:b06d1ee48be866d674bf2719df068e0402cee83553bc94bb05f06821bfdb5deb
+    pullPolicy: IfNotPresent
+  podAnnotations: {}
+  podSecurityContext: {}
+  resources: {}
+  service:
+    type: ClusterIP
+    port: 80
 
-serviceAnnotations:
-  ui: {}
-  api: {}
+api:
+  replicaCount: 1
+  image:
+    repository: frankescobar/allure-docker-service
+    tag: "2.17.2"
+    digest: sha256:849d7776ad0e8b45b2f963875d101520534b0c57885548b481cf4bd88c487e5f
+    pullPolicy: IfNotPresent
+  podAnnotations: {}
+  podSecurityContext: {}
+  resources: {}
+  service:
+    type: ClusterIP
+    port: 80
 
 podSecurityContext: {}
   # fsGroup: 2000
-
-resources:
-  ui: {}
-  api: {}
-
-service:
-  ui:
-    type: ClusterIP
-    port: 80
-  api:
-    type: ClusterIP
-    port: 80
 
 keepHistory: true
 updateFrequency: NONE
