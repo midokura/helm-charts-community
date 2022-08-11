@@ -38,7 +38,7 @@ helm.sh/chart: {{ include "allure.chart" . }}
 {{ include "allure-api.selectorLabels" . }}
 {{ include "allure-ui.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Values.image.api.tag | default .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Values.api.image.tag | default .Chart.AppVersion }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
@@ -50,7 +50,7 @@ API Common labels
 helm.sh/chart: {{ include "allure.chart" . }}
 {{ include "allure-api.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Values.image.api.tag | default .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Values.api.image.tag | default .Chart.AppVersion }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
@@ -62,7 +62,7 @@ UI Common labels
 helm.sh/chart: {{ include "allure.chart" . }}
 {{ include "allure-ui.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Values.image.ui.tag }}
+app.kubernetes.io/version: {{ .Values.ui.image.tag }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
