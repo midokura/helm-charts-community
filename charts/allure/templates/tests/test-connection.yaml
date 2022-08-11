@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: "{{ include "allure.fullname" . }}-test-connection"
   labels:
-    {{- include "allure-api.labels" . | nindent 4 }}
+    {{- include "allure.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
 spec:
