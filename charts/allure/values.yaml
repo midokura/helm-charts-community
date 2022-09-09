@@ -10,13 +10,13 @@ image:
   ui:
     repository: frankescobar/allure-docker-service-ui
     pullPolicy: Always
-    pullSecret: ""
+    pullSecrets: []
     # Overrides the image tag whose default is the chart appVersion.
     tag: "7.0.3"
   api:
     repository: frankescobar/allure-docker-service
     pullPolicy: Always
-    pullSecret: ""
+    pullSecrets: []
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
 
