@@ -10,11 +10,13 @@ image:
   ui:
     repository: frankescobar/allure-docker-service-ui
     pullPolicy: Always
+    pullSecrets: []
     # Overrides the image tag whose default is the chart appVersion.
     tag: "7.0.3"
   api:
     repository: frankescobar/allure-docker-service
     pullPolicy: Always
+    pullSecrets: []
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
 
@@ -25,8 +27,10 @@ podAnnotations:
   ui: {}
   api: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+# WARNING: Do not change fsGroup.
+# Group must be 1000 to use the shared Volume.
+podSecurityContext:
+  fsGroup: 1000
 
 resources:
   ui: {}
@@ -42,25 +46,63 @@ service:
     port: 80
     annotations: {}
 
+# Keep Old Allure Results
 keepHistory: true
+
+# Number of Allure Reports to Keep
+# Set to NONE to use Generate Reports Endpoint
 updateFrequency: NONE
 
+# Enables Admin & Viewer Login
 securityEnabled: true
+
+# Make Viewer Endpoints Public
 publicViewerEndpoint: false
 
+# WARNING: Do not change runAsUser & runAsGroup.
+# User & Group must be 1000 to use the shared Volume.
 securityContext:
   runAsUser: 1000
   runAsGroup: 1000
 
+# Set Admin & Viewer Credentials on Security Enable
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#     name: api-credentials
+# type: Opaque
+# data:
+#   # echo -n 'my_username' | base64
+#   SECURITY_USER: bXlfdXNlcm5hbWU=
+#   # echo -n 'my_password' | base64
+#   SECURITY_PASS: bXlfcGFzc3dvcmQ=
+#   # echo -n 'view_user' | base64
+#   SECURITY_VIEWER_USER: dmlld191c2Vy
+#   # echo -n 'view_pass' | base64
+#   SECURITY_VIEWER_PASS: dmlld19wYXNz
 credentials: api-credentials
 
+# Allure History and Reports Storage Resources
+volume:
+  className: default
+  resources:
+    requests:
+      storage: 4Gi
+
+# For Large Allure Results:
+# - Increase Connection Timeout
+# - Increase Body Size
+# - Diasble Modsecurity
 ingress:
   enabled: false
   tls: false
   existingSecret: ""
-  ingressClassName: nginx
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
+  className: nginx
+  annotations: 
+    nginx.ingress.kubernetes.io/proxy-body-size: 1024m
     # cert-manager.io/cluster-issuer: letsencrypt
+    # nginx.ingress.kubernetes.io/enable-modsecurity: 'false'
+    # nginx.ingress.kubernetes.io/proxy-connect-timeout: '900'
 
-hostname: allure-domain.com
+# Allure UI needs a Public Allure API Hostname
+hostname: ""

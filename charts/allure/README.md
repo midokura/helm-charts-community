@@ -19,6 +19,27 @@ $ helm install my-release .
 
 The command deploys the Allure reporting service and the required components on the Kubernetes cluster in the default configuration.
 
+## Users Credentials
+
+Create a secret:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+    name: api-credentials
+type: Opaque
+data:
+  #echo -n 'my_username' | base64
+  SECURITY_USER: bXlfdXNlcm5hbWU=
+  #echo -n 'my_password' | base64
+  SECURITY_PASS: bXlfcGFzc3dvcmQ=
+  #echo -n 'view_user' | base64
+  SECURITY_VIEWER_USER: dmlld191c2Vy
+  #echo -n 'view_pass' | base64
+  SECURITY_VIEWER_PASS: dmlld19wYXNz
+```
+
 ## Uninstalling the Chart
 
 To uninstall/delete the `my-release` deployment:

@@ -18,6 +18,10 @@ spec:
       labels:
         {{- include "allure-api.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.image.api.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -31,6 +35,9 @@ spec:
                 name: {{ include "allure.fullname" . }}-api
             - secretRef:
                 name: {{ .Values.credentials }}
+          volumeMounts:
+            - name: reports-volume
+              mountPath: /app/projects
           ports:
             - name: api
               containerPort: 5050
@@ -45,3 +52,8 @@ spec:
               port: api
           resources:
             {{- toYaml .Values.resources.api | nindent 12 }}
+      volumes:
+        - name: reports-volume
+          persistentVolumeClaim:
+            claimName: {{ include "allure.fullname" . }}-api
+ 
