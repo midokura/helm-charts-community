@@ -1,7 +1,8 @@
+{{- $fullName := include "allure.fullname" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "allure.fullname" . }}-api
+  name: {{ $fullName }}-api
   labels:
     {{- include "allure-api.labels" . | nindent 4 }}
 spec:
@@ -18,6 +19,10 @@ spec:
       labels:
         {{- include "allure-api.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.image.api.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.api.podSecurityContext | nindent 8 }}
       containers:
@@ -30,9 +35,12 @@ spec:
           {{- end }}
           envFrom:
             - configMapRef:
-                name: {{ include "allure.fullname" . }}-api
+                name: {{ $fullName }}-api
             - secretRef:
                 name: {{ .Values.credentials }}
+          volumeMounts:
+            - name: reports-volume
+              mountPath: /app/projects
           ports:
             - name: api
               containerPort: 5050
@@ -49,3 +57,10 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+      volumes:
+        - name: reports-volume
+          {{- if not .Values.volume.enabled }}
+          emptyDir: {}
+          {{- else }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.volume.existingClaim | default (printf "%s-data" $fullName) }}
