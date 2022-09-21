@@ -26,7 +26,7 @@ spec:
       securityContext:
         {{- toYaml .Values.api.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}-api
+        - name: allure-api
           securityContext:
             {{- toYaml .Values.api.securityContext | nindent 12 }}
           {{- with .Values.api.image }}
@@ -64,3 +64,4 @@ spec:
           {{- else }}
           persistentVolumeClaim:
             claimName: {{ .Values.volume.existingClaim | default (printf "%s-data" $fullName) }}
+          {{- end }}
