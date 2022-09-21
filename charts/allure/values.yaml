@@ -2,6 +2,8 @@
 nameOverride: ""
 fullnameOverride: ""
 
+imagePullSecrets: {}
+
 ui:
   replicaCount: 1
   image:
@@ -11,6 +13,7 @@ ui:
     pullPolicy: IfNotPresent
   podAnnotations: {}
   podSecurityContext: {}
+  securityContext: {}
   resources: {}
   service:
     type: ClusterIP
@@ -24,16 +27,20 @@ api:
     digest: sha256:849d7776ad0e8b45b2f963875d101520534b0c57885548b481cf4bd88c487e5f
     pullPolicy: IfNotPresent
   podAnnotations: {}
-  podSecurityContext: {}
+  # WARNING: Do not change fsGroup.
+  # Group must be 1000 to use the shared Volume.
+  podSecurityContext:
+    fsGroup: 1000
+  # WARNING: Do not change runAsUser & runAsGroup.
+  # User & Group must be 1000 to use the shared Volume.
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
   resources: {}
   service:
     type: ClusterIP
     port: 80
 
-# WARNING: Do not change fsGroup.
-# Group must be 1000 to use the shared Volume.
-podSecurityContext:
-  fsGroup: 1000
 
 # Keep Old Allure Results
 keepHistory: true
@@ -47,12 +54,6 @@ securityEnabled: true
 
 # Make Viewer Endpoints Public
 publicViewerEndpoint: false
-
-# WARNING: Do not change runAsUser & runAsGroup.
-# User & Group must be 1000 to use the shared Volume.
-securityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
 
 # Set Admin & Viewer Credentials on Security Enable
 # apiVersion: v1

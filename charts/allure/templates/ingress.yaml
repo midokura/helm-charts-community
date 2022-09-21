@@ -28,14 +28,14 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "allure.fullname" . }}-api
+                name: {{ $fullName }}-api
                 port:
                   name: api
           - path: /?(.*)
             pathType: Prefix
             backend:
               service:
-                name: {{ include "allure.fullname" . }}-ui
+                name: {{ $fullName }}-ui
                 port:
                   name: ui
 {{- end }}
