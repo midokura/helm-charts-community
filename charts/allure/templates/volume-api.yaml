@@ -1,12 +1,18 @@
-
+{{- if and (.Values.volume.enabled) (not .Values.volume.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "allure.fullname" . }}-api
+  name: {{ include "allure.fullname" . }}-data
+  labels:
+    {{- include "allure-api.selectorLabels" . | nindent 4 }}
 spec:
+{{- with .Values.volume }}
   accessModes:
-    - ReadWriteOnce
+    {{- toYaml .accessModes | nindent 4 }}
   volumeMode: Filesystem
-  storageClassName: {{ .Values.volume.className }}
+  storageClassName: {{ .storageClassName }}
   resources:
-    {{- toYaml .Values.volume.resources | nindent 4 }}
+    requests:
+      storage: {{ .size }}
+{{- end }}
+{{- end }}

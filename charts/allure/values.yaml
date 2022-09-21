@@ -84,10 +84,12 @@ credentials: api-credentials
 
 # Allure History and Reports Storage Resources
 volume:
-  className: default
-  resources:
-    requests:
-      storage: 4Gi
+  enabled: true
+  storageClassName: ""
+  size: 4Gi
+  existingClaim: ""
+  accessModes:
+    - ReadWriteMany
 
 # For Large Allure Results:
 # - Increase Connection Timeout
