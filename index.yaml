@@ -3,6 +3,16 @@ entries:
   allure:
   - apiVersion: v2
     appVersion: 2.17.2
+    created: "2022-09-21T08:24:38.97940283Z"
+    description: A Helm chart for Allure Report
+    digest: 089394e0ececd7094a0e1ec8c08f0d4155b1a589de67cf1c50816f00025e3c43
+    name: allure
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/allure-0.0.4/allure-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
+    appVersion: 2.17.2
     created: "2022-09-09T09:08:30.702797087Z"
     description: A Helm chart for Allure Report
     digest: 75a42f7ef34453beb57190af9d78d61dd3d3d77e8f85c662fe334f0b628b1927
@@ -580,4 +590,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2022-09-09T09:08:30.702894462Z"
+generated: "2022-09-21T08:24:38.979669331Z"
