@@ -89,11 +89,10 @@ ingress:
   tls: false
   existingSecret: ""
   className: nginx
+  # Allure UI needs a Public Allure API Hostname
+  hostname: ""
   annotations: 
     nginx.ingress.kubernetes.io/proxy-body-size: 1024m
     # cert-manager.io/cluster-issuer: letsencrypt
     # nginx.ingress.kubernetes.io/enable-modsecurity: 'false'
     # nginx.ingress.kubernetes.io/proxy-connect-timeout: '900'
-
-# Allure UI needs a Public Allure API Hostname
-hostname: ""
