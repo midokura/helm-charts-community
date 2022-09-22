@@ -6,31 +6,33 @@ metadata:
   labels:
     {{- include "allure-api.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount.api }}
+  replicas: {{ .Values.api.replicaCount }}
   selector:
     matchLabels:
       {{- include "allure-api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations.api }}
+      {{- with .Values.api.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "allure-api.selectorLabels" . | nindent 8 }}
     spec:
-      {{- with .Values.image.api.pullSecrets }}
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.api.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}-api
+        - name: allure-api
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.api.repository }}:{{ .Values.image.api.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.api.pullPolicy }}
+            {{- toYaml .Values.api.securityContext | nindent 12 }}
+          {{- with .Values.api.image }}
+          image: "{{ .repository }}:{{ .tag }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ $fullName }}-api
@@ -51,8 +53,10 @@ spec:
             httpGet:
               path: /allure-docker-service/version
               port: api
+          {{- with .Values.api.resources }}
           resources:
-            {{- toYaml .Values.resources.api | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
         - name: reports-volume
           {{- if not .Values.volume.enabled }}

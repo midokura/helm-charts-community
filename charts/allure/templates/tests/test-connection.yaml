@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "allure.fullname" . }}-ui:{{ .Values.service.port }}']
+      args: ['{{ include "allure.fullname" . }}-ui:{{ .Values.ui.service.port }}']
   restartPolicy: Never
