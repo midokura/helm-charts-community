@@ -7,7 +7,6 @@ metadata:
   labels:
     {{- include "allure.labels" . | nindent 4 }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
   {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -24,14 +23,14 @@ spec:
     - host: {{ .hostname | quote }}
       http:
         paths:
-          - path: /allure-docker-service/?(.*)
+          - path: /allure-docker-service
             pathType: Prefix
             backend:
               service:
                 name: {{ $fullName }}-api
                 port:
                   name: api
-          - path: /?(.*)
+          - path: /
             pathType: Prefix
             backend:
               service:
