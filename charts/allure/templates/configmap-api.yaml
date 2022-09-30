@@ -10,3 +10,4 @@ data:
   TLS: {{ .Values.securityEnabled | int | quote }}
   SECURITY_ENABLED: {{ .Values.securityEnabled | int | quote }}
   MAKE_VIEWER_ENDPOINTS_PUBLIC: {{ .Values.publicViewerEndpoint | int | quote }}
+  DEV_MODE: {{ .Values.api.devMode | int | quote }}

@@ -21,6 +21,8 @@ ui:
 
 api:
   replicaCount: 1
+  # Run developer mode to log HTTP requests
+  devMode: false
   image:
     repository: frankescobar/allure-docker-service
     tag: "2.17.2"
