@@ -21,10 +21,12 @@ ui:
 
 api:
   replicaCount: 1
+  # Run developer mode to log HTTP requests
+  devMode: false
   image:
     repository: frankescobar/allure-docker-service
-    tag: "2.17.2"
-    digest: sha256:849d7776ad0e8b45b2f963875d101520534b0c57885548b481cf4bd88c487e5f
+    tag: "2.19.0"
+    digest: sha256:e1db15a4f235c30c424b3bb06e3b87e7583c9606981dc9d7a2746fd4f2a3c145
     pullPolicy: IfNotPresent
   podAnnotations: {}
   # WARNING: Do not change fsGroup.
