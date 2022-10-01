@@ -1,0 +1,25 @@
+apiVersion: v2
+name: errbot
+type: application
+description: A daemon that connects to your favorite chat service and brings your tools into the conversation.
+keywords:
+  - gitops
+  - bot
+  - chatbot
+home: https://github.com/midokura/helm-charts-community/tree/main/errbot
+icon: https://errbot.readthedocs.io/en/latest/_static/errbot.png
+sources:
+  - https://github.com/errbotio/errbot
+maintainers:
+  - name: David Girón
+    url: https://github.com/duhow
+
+version: 0.0.1
+# renovate: datasource=docker depName=errbotio/errbot
+appVersion: 6.1.9
+
+dependencies:
+  - name: redis
+    repository: https://charts.bitnami.com/bitnami
+    version: 17.x.x
+    condition: redis.install

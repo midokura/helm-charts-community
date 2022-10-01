@@ -1,0 +1,5 @@
+/*.yaml
+!values.yaml
+!Chart.yaml
+
+charts/*

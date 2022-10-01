@@ -1,0 +1,182 @@
+{{- $fullName := include "errbot.fullname" . }}
+apiVersion: apps/v1
+kind: {{ .Values.kind }}
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "errbot.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  {{- if (eq .Values.kind "StatefulSet") }}
+  serviceName: {{ printf "%s-headless" $fullName }}
+  {{- if .Values.updateStrategy }}
+  updateStrategy: {{- toYaml .Values.updateStrategy | nindent 4 }}
+  {{- end }}
+  {{- else }}
+  {{- if .Values.updateStrategy }}
+  strategy: {{- toYaml .Values.updateStrategy | nindent 4 }}
+  {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "errbot.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "errbot.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "errbot.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+      {{- if .Values.persistence.initialize }}
+      - name: initialize
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- with .Values.image }}
+        image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+        imagePullPolicy: {{ .pullPolicy }}
+        {{- end }}
+        workingDir: {{ .Values.persistence.path }}
+        command: [errbot, --init]
+        volumeMounts:
+        - name: errbot-data
+          mountPath: {{ .Values.persistence.path }}
+      {{- end }}
+      {{- if .Values.plugins }}
+      - name: plugins
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- with .Values.image }}
+        image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+        imagePullPolicy: {{ .pullPolicy }}
+        {{- end }}
+        workingDir: {{ .Values.persistence.path }}
+        env:
+        - name: PLUGIN_LIST
+          value: {{ .Values.plugins | join " " }}
+        command: ["/bin/bash"]
+        args:
+        - -c
+        - |-
+            export PLUGIN_DIR=$(python3 -c "import config; print(config.BOT_DATA_DIR)");
+            git config --global pull.ff only;
+            for PLUGIN in ${PLUGIN_LIST}; do
+            cd ${PLUGIN_DIR}/plugins;
+            [ -e "$PLUGIN" ] && cd $PLUGIN && git pull || true;
+            [ ! -e "$PLUGIN" ] && git clone --depth=1 https://github.com/${PLUGIN} ${PLUGIN} || true;
+            done
+        volumeMounts:
+        - name: errbot-data
+          mountPath: {{ .Values.persistence.path }}
+      {{- end }}
+      {{- with .Values.extraInitContainers }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      containers:
+      - name: errbot
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- with .Values.image }}
+        image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+        imagePullPolicy: {{ .pullPolicy }}
+        {{- end }}
+        {{- if .Values.workingDir }}
+        workingDir: {{ .Values.workingDir }}
+        {{- end }}
+        env:
+        {{- range $key, $val := .Values.env }}
+        - name: {{ $key }}
+          value: {{ $val | quote }}
+        {{- end }}
+        {{- with .Values.envFrom }}
+        envFrom: {{ . | toYaml | nindent 10 }}
+        {{- end }}
+        ports:
+          - name: http
+            containerPort: {{ .Values.service.containerPort }}
+            protocol: TCP
+        {{- with .Values.livenessProbe }}
+        {{- if .enabled }}
+        livenessProbe:
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+          successThreshold: {{ .successThreshold }}
+          failureThreshold: {{ .failureThreshold }}
+          timeoutSeconds: {{ .timeoutSeconds }}
+        {{- if .path }}
+          httpGet:
+            path: {{ .path | quote }}
+            port: http
+        {{- else if .command }}
+          exec:
+            command: {{ .command }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        volumeMounts:
+        - name: errbot-config
+          readOnly: true
+          mountPath: {{ .Values.config.path }}
+          subPath: config.py
+        - name: errbot-data
+          mountPath: {{ .Values.persistence.path }}
+      {{- with .Values.extraContainers }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      {{- if eq .Values.config.type "Secret" }}
+      - name: errbot-config
+        secret:
+          secretName: {{ printf "%s-config" $fullName }}
+      {{- else if eq .Values.config.type "ConfigMap" }}
+      - name: errbot-config
+        configMap:
+          name: {{ printf "%s-config" $fullName }}
+      {{- end }}
+      {{- if not .Values.persistence.enabled }}
+      - name: errbot-data
+        emptyDir: {}
+      {{- else if .Values.persistence.existingClaim }}
+      - name: errbot-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim }}
+      {{- else if (eq .Values.kind "StatefulSet") }}
+  volumeClaimTemplates:
+  - metadata:
+      name: errbot-data
+      labels:
+        {{- include "errbot.selectorLabels" . | nindent 10 }}
+    spec:
+      accessModes:
+      {{- range .Values.persistence.accessModes }}
+      - {{ . | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
+      storageClassName: {{ .Values.persistence.storageClassName }}
+      {{- end }}
