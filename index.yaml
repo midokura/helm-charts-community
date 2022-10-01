@@ -63,6 +63,34 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/allure-0.0.1/allure-0.0.1.tgz
     version: 0.0.1
+  errbot:
+  - apiVersion: v2
+    appVersion: 6.1.9
+    created: "2022-10-01T17:33:20.63074947Z"
+    dependencies:
+    - condition: redis.install
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.x.x
+    description: A daemon that connects to your favorite chat service and brings your
+      tools into the conversation.
+    digest: ed985dc4fb8ec1609de9db32d64c62c5998f41b93ee43690c8313b79fc8e413a
+    home: https://github.com/midokura/helm-charts-community/tree/main/errbot
+    icon: https://errbot.readthedocs.io/en/latest/_static/errbot.png
+    keywords:
+    - gitops
+    - bot
+    - chatbot
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: errbot
+    sources:
+    - https://github.com/errbotio/errbot
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/errbot-0.0.1/errbot-0.0.1.tgz
+    version: 0.0.1
   fossology:
   - apiVersion: v2
     appVersion: 4.0.0
@@ -612,4 +640,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2022-09-30T15:17:22.636963008Z"
+generated: "2022-10-01T17:33:20.630986584Z"
