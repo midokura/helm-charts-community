@@ -1,6 +1,6 @@
 # Errbot
 
-[Errbot](https://errbot.readthedocs.io/en/latest/) Errbot is a chatbot, a daemon that connects to your favorite chat service and brings your tools into the conversation.
+[Errbot](https://errbot.readthedocs.io/en/latest/) is a chatbot, a daemon that connects to your favorite chat service and brings your tools into the conversation.
 
 ## Components
 
