@@ -1,0 +1,17 @@
+{{- if (and (not .Values.config.existingName) (.Values.config.values)) }}
+apiVersion: v1
+kind: {{ .Values.config.type }}
+metadata:
+  name: {{ include "errbot.fullname" . }}-config
+  labels:
+    {{- include "errbot.labels" . | nindent 4 }}
+data:
+{{- with .Values.config }}
+  config.py: |
+  {{- if eq .type "Secret" }}
+    {{ .values | b64enc }}
+  {{- else if eq .type "ConfigMap" }}
+    {{ .values | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
