@@ -69,6 +69,7 @@ spec:
         - |-
             export PLUGIN_DIR=$(python3 -c "import config; print(config.BOT_DATA_DIR)");
             git config --global pull.ff only;
+            mkdir -p ${PLUGIN_DIR}/plugins;
             for PLUGIN in ${PLUGIN_LIST}; do
             cd ${PLUGIN_DIR}/plugins;
             [ -e "$PLUGIN" ] && cd $PLUGIN && git pull || true;
