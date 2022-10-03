@@ -21,6 +21,8 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+automountServiceAccountToken: false
+
 updateStrategy: {}
 
 podAnnotations: {}
@@ -88,18 +90,18 @@ livenessProbe:
   timeoutSeconds: 1
 
 # Defaults to image (/home/errbot)
-workingDir: ""
+workingDir: /opt/errbot
 
 config:
   existingName: ""
   type: Secret
-  path: /home/errbot/config.py
+  path: /opt/errbot/config.py
   values: |
     import logging
 
     BACKEND = "Text"
-    BOT_DATA_DIR = r"/home/errbot/data"
-    BOT_EXTRA_PLUGIN_DIR = r"/home/errbot/plugins"
+    BOT_DATA_DIR = r"/opt/errbot/data"
+    BOT_EXTRA_PLUGIN_DIR = r"/opt/errbot/plugins"
     BOT_LOG_FILE = r"/tmp/err.log"
     BOT_LOG_LEVEL = logging.INFO
     BOT_ADMINS = ("@CHANGE_ME",)
@@ -114,7 +116,7 @@ persistence:
   enabled: true
   # initialize Errbot data content
   initialize: true
-  path: /home/errbot
+  path: /opt/errbot
   size: 1Gi
   existingClaim: ""
   storageClassName: ""

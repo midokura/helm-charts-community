@@ -29,6 +29,7 @@ spec:
       labels:
         {{- include "errbot.selectorLabels" . | nindent 8 }}
     spec:
+      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
