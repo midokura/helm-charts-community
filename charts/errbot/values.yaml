@@ -3,6 +3,10 @@ kind: StatefulSet
 
 replicaCount: 1
 
+# If false, Pod will run sleep.
+# Useful for modifying data-storage settings
+startErrbot: true
+
 image:
   repository: errbotio/errbot
   tag: 6.1.9

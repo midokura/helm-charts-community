@@ -91,6 +91,9 @@ spec:
         image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
         imagePullPolicy: {{ .pullPolicy }}
         {{- end }}
+        {{- if deepEqual .Values.startErrbot false }}
+        command: [sleep, infinity]
+        {{- end }}
         {{- if .Values.workingDir }}
         workingDir: {{ .Values.workingDir }}
         {{- end }}
@@ -107,7 +110,7 @@ spec:
             containerPort: {{ .Values.service.containerPort }}
             protocol: TCP
         {{- with .Values.livenessProbe }}
-        {{- if .enabled }}
+        {{- if and (.enabled) ($.Values.startErrbot) }}
         livenessProbe:
           initialDelaySeconds: {{ .initialDelaySeconds }}
           periodSeconds: {{ .periodSeconds }}
