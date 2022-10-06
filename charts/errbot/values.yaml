@@ -83,9 +83,9 @@ affinity: {}
 
 terminationGracePeriodSeconds: 15
 
-# List of plugins to setup as GitHub Repositories
+# List of dict (repo) plugins to setup as GitHub Repositories
 plugins: []
-# - errbotio/err-storage-redis
+# - repo: errbotio/err-storage-redis
 
 livenessProbe:
   enabled: false
@@ -105,6 +105,16 @@ lifecycle: {}
 workingDir: /opt/errbot
 
 config:
+  # Set any configuration before running Errbot
+  storage: []
+  #- name: core
+  #  strategy: merge
+  #  values:
+  #    configs:
+  #      Webserver:
+  #        HOST: 0.0.0.0
+  #        PORT: 3141
+
   # Configure Webserver plugin during initialization
   enableWebserver: true
   existingName: ""

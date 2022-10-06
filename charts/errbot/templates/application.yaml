@@ -73,7 +73,8 @@ spec:
         workingDir: {{ .Values.persistence.path }}
         env:
         - name: PLUGIN_LIST
-          value: {{ .Values.plugins | join " " }}
+          value: >-
+            {{ range .Values.plugins }}{{ .repo }} {{ end }}
         command: ["/bin/bash"]
         args:
         - -c
@@ -87,6 +88,30 @@ spec:
             [ ! -e "$PLUGIN" ] && git clone --depth=1 https://github.com/${PLUGIN} ${PLUGIN} || true;
             done
         volumeMounts:
+        - name: errbot-data
+          mountPath: {{ .Values.persistence.path }}
+      {{- end }}
+      {{- if .Values.config.storage }}
+      - name: config-storage
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- with .Values.image }}
+        image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+        imagePullPolicy: {{ .pullPolicy }}
+        {{- end }}
+        workingDir: {{ .Values.persistence.path }}
+        command: ["/bin/bash"]
+        args:
+        - -c
+        - |-
+          {{- range .Values.config.storage }}
+            echo {{ .values | toJson | quote }} | errbot {{ printf "--storage-%s" .strategy }} {{ .name }};
+          {{- end }}
+        volumeMounts:
+        - name: errbot-config
+          readOnly: true
+          mountPath: {{ .Values.config.path }}
+          subPath: config.py
         - name: errbot-data
           mountPath: {{ .Values.persistence.path }}
       {{- end }}
