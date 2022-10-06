@@ -23,12 +23,16 @@ serviceAccount:
 
 automountServiceAccountToken: false
 
+tty: false
+stdin: false
+
 updateStrategy: {}
 
 podAnnotations: {}
 
 podSecurityContext: {}
-  # fsGroup: 2000
+  # fsGroup: 1000
+  # fsGroupChangePolicy: OnRootMismatch
 
 # Container Security Context
 securityContext:
@@ -88,6 +92,10 @@ livenessProbe:
   successThreshold: 1
   failureThreshold: 3
   timeoutSeconds: 1
+
+lifecycle: {}
+  # preStop: {}
+  # postStart: {}
 
 # Defaults to image (/home/errbot)
 workingDir: /opt/errbot

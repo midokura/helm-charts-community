@@ -124,6 +124,10 @@ spec:
         {{- end }}
         {{- end }}
         {{- end }}
+        {{- with .Values.lifecycle }}
+        lifecycle:
+          {{- . | toYaml | nindent 12 }}
+        {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         volumeMounts:
@@ -133,6 +137,8 @@ spec:
           subPath: config.py
         - name: errbot-data
           mountPath: {{ .Values.persistence.path }}
+        tty: {{ .Values.tty }}
+        stdin: {{ .Values.stdin }}
       {{- with .Values.extraContainers }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
