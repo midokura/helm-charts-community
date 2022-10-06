@@ -105,6 +105,8 @@ lifecycle: {}
 workingDir: /opt/errbot
 
 config:
+  # Configure Webserver plugin during initialization
+  enableWebserver: true
   existingName: ""
   type: Secret
   path: /opt/errbot/config.py
