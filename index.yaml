@@ -66,6 +66,33 @@ entries:
   errbot:
   - apiVersion: v2
     appVersion: 6.1.9
+    created: "2022-10-06T20:27:33.830362386Z"
+    dependencies:
+    - condition: redis.install
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.x.x
+    description: A daemon that connects to your favorite chat service and brings your
+      tools into the conversation.
+    digest: a173e37bbeeaa53285d503a64b883c4730230796dcde2f51a9d5ca58e8269358
+    home: https://github.com/midokura/helm-charts-community/tree/main/errbot
+    icon: https://errbot.readthedocs.io/en/latest/_static/errbot.png
+    keywords:
+    - gitops
+    - bot
+    - chatbot
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: errbot
+    sources:
+    - https://github.com/errbotio/errbot
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/errbot-0.0.2/errbot-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 6.1.9
     created: "2022-10-01T17:33:20.63074947Z"
     dependencies:
     - condition: redis.install
@@ -640,4 +667,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2022-10-01T17:33:20.630986584Z"
+generated: "2022-10-06T20:27:33.830429387Z"
