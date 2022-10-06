@@ -3,6 +3,10 @@ kind: StatefulSet
 
 replicaCount: 1
 
+# If false, Pod will run sleep.
+# Useful for modifying data-storage settings
+startErrbot: true
+
 image:
   repository: errbotio/errbot
   tag: 6.1.9
@@ -21,12 +25,18 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+automountServiceAccountToken: false
+
+tty: false
+stdin: false
+
 updateStrategy: {}
 
 podAnnotations: {}
 
 podSecurityContext: {}
-  # fsGroup: 2000
+  # fsGroup: 1000
+  # fsGroupChangePolicy: OnRootMismatch
 
 # Container Security Context
 securityContext:
@@ -73,9 +83,9 @@ affinity: {}
 
 terminationGracePeriodSeconds: 15
 
-# List of plugins to setup as GitHub Repositories
+# List of dict (repo) plugins to setup as GitHub Repositories
 plugins: []
-# - errbotio/err-storage-redis
+# - repo: errbotio/err-storage-redis
 
 livenessProbe:
   enabled: false
@@ -87,19 +97,35 @@ livenessProbe:
   failureThreshold: 3
   timeoutSeconds: 1
 
+lifecycle: {}
+  # preStop: {}
+  # postStart: {}
+
 # Defaults to image (/home/errbot)
-workingDir: ""
+workingDir: /opt/errbot
 
 config:
+  # Set any configuration before running Errbot
+  storage: []
+  #- name: core
+  #  strategy: merge
+  #  values:
+  #    configs:
+  #      Webserver:
+  #        HOST: 0.0.0.0
+  #        PORT: 3141
+
+  # Configure Webserver plugin during initialization
+  enableWebserver: true
   existingName: ""
   type: Secret
-  path: /home/errbot/config.py
+  path: /opt/errbot/config.py
   values: |
     import logging
 
     BACKEND = "Text"
-    BOT_DATA_DIR = r"/home/errbot/data"
-    BOT_EXTRA_PLUGIN_DIR = r"/home/errbot/plugins"
+    BOT_DATA_DIR = r"/opt/errbot/data"
+    BOT_EXTRA_PLUGIN_DIR = r"/opt/errbot/plugins"
     BOT_LOG_FILE = r"/tmp/err.log"
     BOT_LOG_LEVEL = logging.INFO
     BOT_ADMINS = ("@CHANGE_ME",)
@@ -114,7 +140,7 @@ persistence:
   enabled: true
   # initialize Errbot data content
   initialize: true
-  path: /home/errbot
+  path: /opt/errbot
   size: 1Gi
   existingClaim: ""
   storageClassName: ""

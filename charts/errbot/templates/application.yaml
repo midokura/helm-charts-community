@@ -29,6 +29,7 @@ spec:
       labels:
         {{- include "errbot.selectorLabels" . | nindent 8 }}
     spec:
+      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -46,7 +47,17 @@ spec:
         imagePullPolicy: {{ .pullPolicy }}
         {{- end }}
         workingDir: {{ .Values.persistence.path }}
-        command: [errbot, --init]
+        command: ["/bin/bash"]
+        args:
+        - -c
+        - |-
+            if [ ! -d "data" ] && [ ! -d "plugins" ]; then
+            errbot --init;
+            rm -vrf ./plugins/err-example;
+            fi;
+            {{- if .Values.config.enableWebserver }}
+            echo "{'configs': {'Webserver': {'HOST': '0.0.0.0', 'PORT': {{ .Values.service.containerPort }} }}}" | errbot --storage-merge core;
+            {{- end }}
         volumeMounts:
         - name: errbot-data
           mountPath: {{ .Values.persistence.path }}
@@ -62,19 +73,45 @@ spec:
         workingDir: {{ .Values.persistence.path }}
         env:
         - name: PLUGIN_LIST
-          value: {{ .Values.plugins | join " " }}
+          value: >-
+            {{ range .Values.plugins }}{{ .repo }} {{ end }}
         command: ["/bin/bash"]
         args:
         - -c
         - |-
             export PLUGIN_DIR=$(python3 -c "import config; print(config.BOT_DATA_DIR)");
             git config --global pull.ff only;
+            mkdir -p ${PLUGIN_DIR}/plugins;
             for PLUGIN in ${PLUGIN_LIST}; do
             cd ${PLUGIN_DIR}/plugins;
             [ -e "$PLUGIN" ] && cd $PLUGIN && git pull || true;
             [ ! -e "$PLUGIN" ] && git clone --depth=1 https://github.com/${PLUGIN} ${PLUGIN} || true;
             done
         volumeMounts:
+        - name: errbot-data
+          mountPath: {{ .Values.persistence.path }}
+      {{- end }}
+      {{- if .Values.config.storage }}
+      - name: config-storage
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- with .Values.image }}
+        image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+        imagePullPolicy: {{ .pullPolicy }}
+        {{- end }}
+        workingDir: {{ .Values.persistence.path }}
+        command: ["/bin/bash"]
+        args:
+        - -c
+        - |-
+          {{- range .Values.config.storage }}
+            echo {{ .values | toJson | quote }} | errbot {{ printf "--storage-%s" .strategy }} {{ .name }};
+          {{- end }}
+        volumeMounts:
+        - name: errbot-config
+          readOnly: true
+          mountPath: {{ .Values.config.path }}
+          subPath: config.py
         - name: errbot-data
           mountPath: {{ .Values.persistence.path }}
       {{- end }}
@@ -89,6 +126,9 @@ spec:
         image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
         imagePullPolicy: {{ .pullPolicy }}
         {{- end }}
+        {{- if deepEqual .Values.startErrbot false }}
+        command: [sleep, infinity]
+        {{- end }}
         {{- if .Values.workingDir }}
         workingDir: {{ .Values.workingDir }}
         {{- end }}
@@ -100,12 +140,14 @@ spec:
         {{- with .Values.envFrom }}
         envFrom: {{ . | toYaml | nindent 10 }}
         {{- end }}
+        {{- if .Values.config.enableWebserver }}
         ports:
           - name: http
             containerPort: {{ .Values.service.containerPort }}
             protocol: TCP
+        {{- end }}
         {{- with .Values.livenessProbe }}
-        {{- if .enabled }}
+        {{- if and (.enabled) ($.Values.startErrbot) }}
         livenessProbe:
           initialDelaySeconds: {{ .initialDelaySeconds }}
           periodSeconds: {{ .periodSeconds }}
@@ -122,6 +164,10 @@ spec:
         {{- end }}
         {{- end }}
         {{- end }}
+        {{- with .Values.lifecycle }}
+        lifecycle:
+          {{- . | toYaml | nindent 12 }}
+        {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         volumeMounts:
@@ -131,6 +177,8 @@ spec:
           subPath: config.py
         - name: errbot-data
           mountPath: {{ .Values.persistence.path }}
+        tty: {{ .Values.tty }}
+        stdin: {{ .Values.stdin }}
       {{- with .Values.extraContainers }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
