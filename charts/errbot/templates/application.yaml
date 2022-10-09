@@ -177,8 +177,43 @@ spec:
           subPath: config.py
         - name: errbot-data
           mountPath: {{ .Values.persistence.path }}
+        {{- with .Values.extraVolumeMounts }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
         tty: {{ .Values.tty }}
         stdin: {{ .Values.stdin }}
+        {{- if .Values.gitsync.enabled }}
+      - name: git-sync
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- with .Values.gitsync.image }}
+        image: "{{ .repository }}{{ if .digest }}@{{ .digest }}{{ else }}:{{ .tag }}{{ end }}"
+        imagePullPolicy: {{ .pullPolicy }}
+        {{- end }}
+        args:
+        {{- range $key, $val := .Values.gitsync.config }}
+        - {{ printf "--%s" $key | quote }}
+        {{- if not (deepEqual $val true) }}
+        - {{ $val | quote }}
+        {{- end }}
+        {{- end }}
+        env:
+        {{- range $key, $val := .Values.gitsync.env }}
+        - name: {{ $key }}
+          value: {{ $val | quote }}
+        {{- end }}
+        {{- with .Values.gitsync.envFrom }}
+        envFrom: {{ . | toYaml | nindent 10 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.gitsync.resources | nindent 12 }}
+        volumeMounts:
+        - name: errbot-data
+          mountPath: {{ .Values.persistence.path }}
+        {{- with .Values.gitsync.extraVolumeMounts }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- end }}
       {{- with .Values.extraContainers }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
@@ -196,6 +231,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+      {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if eq .Values.config.type "Secret" }}
       - name: errbot-config
         secret:

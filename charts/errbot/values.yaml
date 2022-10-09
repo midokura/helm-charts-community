@@ -151,5 +151,29 @@ persistence:
 extraInitContainers: []
 extraContainers: []
 
+extraVolumes: []
+extraVolumeMounts: []
+
+# Sidecar container that pulls content from Git repository (eg. custom private plugins)
+gitsync:
+  enabled: false
+  image:
+    repository: gcr.io/k8s-staging-git-sync/git-sync
+    tag: v3.6.1
+    # digest: sha256:7ee16e73dcc87f26f431085ed055273f166bf1c6b51f658590c4727206704374
+    digest: null
+    pullPolicy: IfNotPresent
+  env: {}
+  envFrom: []
+  resources: {}
+  # use .Values.extraVolumes to define resources
+  extraVolumeMounts: []
+  config:
+    # repo: https://github.com/kubernetes/git-sync
+    root: /opt/errbot/git
+    branch: main
+    rev: HEAD
+    wait: 60
+
 redis:
   install: false
