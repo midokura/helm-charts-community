@@ -1,0 +1,14 @@
+{{- $fullName := include "fah.fullname" . }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ printf "%s-config" $fullName }}
+  labels:
+    {{- include "fah.labels" . | nindent 4 }}
+stringData:
+  config.xml: |
+    <config>
+    {{- range $name, $value := .Values.config }}
+        <{{ $name }} value={{ $value | quote }} />
+    {{- end }}
+    </config>

@@ -1,0 +1,74 @@
+{{- $gpuEnabled := .Values.gpu.enabled }}
+{{- $fullName := include "fah.fullname" . }}
+{{- $fullNameSuffix := $gpuEnabled | ternary (printf "%s-gpu" $fullName) ($fullName) }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $fullNameSuffix }}
+  labels:
+    {{- include "fah.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ printf "%s-headless" $fullName }}
+  selector:
+    matchLabels:
+      {{- include "fah.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "fah.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "fah.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- $imageData := $gpuEnabled | ternary .Values.gpu.image .Values.image }}
+          image: "{{ $imageData.repository }}:{{ $imageData.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $imageData.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 7396
+              protocol: TCP
+            - name: command
+              containerPort: 36330
+              protocol: TCP
+          {{- if and ($gpuEnabled) (not .Values.resources) }}
+          {{- fail "Define GPU resources to assign a GPU." }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: work
+            mountPath: {{ $gpuEnabled | ternary (.Values.gpu.workPath) (.Values.workPath) | quote }}
+          - name: config
+            mountPath: {{ $gpuEnabled | ternary (.Values.gpu.configFile) (.Values.configFile) | quote }}
+            subPath: config.xml
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: work
+        emptyDir: {}
+      - name: config
+        secret:
+          secretName: {{ $fullName }}-config
