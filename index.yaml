@@ -145,6 +145,27 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/errbot-0.0.1/errbot-0.0.1.tgz
     version: 0.0.1
+  folding-at-home:
+  - apiVersion: v2
+    appVersion: 7.6.21
+    created: "2022-10-28T12:47:33.979764732Z"
+    description: A distributed computing project for simulating protein dynamics,
+      including the process of protein folding and the movements of proteins implicated
+      in a variety of diseases.
+    digest: d46e3a84c4873d1258df6d913c621255934719bc1ef335cde2ad51e52eb61e96
+    home: https://github.com/midokura/helm-charts-community/tree/main/folding-at-home
+    icon: https://avatars.githubusercontent.com/u/4166223?s=200&v=4
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: folding-at-home
+    sources:
+    - https://hub.docker.com/r/linuxserver/foldingathome
+    - https://hub.docker.com/r/foldingathome/fah-gpu
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/folding-at-home-0.0.1/folding-at-home-0.0.1.tgz
+    version: 0.0.1
   fossology:
   - apiVersion: v2
     appVersion: 4.0.0
@@ -714,4 +735,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2022-10-14T07:09:20.806432326Z"
+generated: "2022-10-28T12:47:33.97990023Z"
