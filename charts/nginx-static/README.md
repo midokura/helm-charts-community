@@ -11,3 +11,8 @@ You can override this by providing another valid digest or removing the value:
 image:
   digest: null
 ```
+
+## Persistence
+
+Optionally, you can use `persistence` to store permanent data (suitable for custom images).
+Note that this will still use `Deployment` type, so it requires to run as a **single replica**, unless you provide a StorageClass with `ReadWriteMany` support.

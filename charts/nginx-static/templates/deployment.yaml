@@ -109,6 +109,10 @@ spec:
           {{- end }}
           {{- end }}
           volumeMounts:
+          {{- if .Values.persistence.enabled }}
+            - name: persistent-storage
+              mountPath: {{ .Values.persistence.mountPath }}
+          {{- end }}
           {{- if .Values.configNginx }}
             - name: nginx-conf
               mountPath: /etc/nginx/conf.d/default.conf
@@ -172,13 +176,20 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.git.enabled }}
+      {{- if or (.Values.git.enabled) (.Values.persistence.enabled) }}
       volumes:
+      {{- end }}
+      {{- if .Values.persistence.enabled }}
+        - name: persistent-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | default (include "nginx-static.fullname" .) }}
+      {{- end -}}
+      {{- if .Values.git.enabled }}
         - name: nginx-html
           emptyDir:
-          {{- if .Values.useMemoryStorage }}
+        {{- if .Values.useMemoryStorage }}
             medium: Memory
-          {{- end }}
+        {{- end }}
         {{- if .Values.configNginx }}
         - name: nginx-conf
           configMap:
