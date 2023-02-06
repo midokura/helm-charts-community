@@ -15,4 +15,4 @@ maintainers:
 
 version: 0.0.3
 # renovate: datasource=docker depName=linuxserver/unifi-controller
-appVersion: 7.2.94
+appVersion: 7.3.83
