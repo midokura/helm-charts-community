@@ -1,0 +1,19 @@
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "dependency-track.pvcName" . }}
+  labels:
+    {{- include "dependency-track.api.labels" . | nindent 4 }}
+spec:
+{{- with .Values.persistence }}
+  {{- with .accessModes }}
+  accessModes:
+    {{- toYaml . | nindent 6 }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .size }}
+  storageClassName: {{ .storageClass | quote }}
+{{- end }}
+{{- end }}
