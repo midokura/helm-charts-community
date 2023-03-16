@@ -28,4 +28,25 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/fossology-0.2.0/fossology-0.2.0.tgz
     version: 0.2.0
-generated: "2023-03-16T16:03:31.222203937Z"
+  unifi:
+  - apiVersion: v2
+    appVersion: 7.3.83
+    created: "2023-03-16T16:05:47.565853447Z"
+    description: Manage all your Unifi devices through a central site.
+    digest: 66cd57b2b958e24f8020229ee02224d358238735289c5ccf35222fe3964d6fb3
+    home: https://github.com/midokura/helm-charts-community/tree/main/unifi-controller
+    icon: https://avatars.githubusercontent.com/u/3934889?s=200
+    keywords:
+    - nms
+    - network
+    - monitoring
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: unifi
+    sources:
+    - https://hub.docker.com/r/linuxserver/unifi-controller
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/unifi-0.0.4/unifi-0.0.4.tgz
+    version: 0.0.4
+generated: "2023-03-16T16:05:47.565866148Z"
