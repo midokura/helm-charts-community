@@ -17,7 +17,8 @@ image:
 imagePullSecrets: []
 
 podAnnotations: {}
-podSecurityContext: {}
+podSecurityContext:
+  fsGroup: 999
 
 nodeSelector: {}
 tolerations: []
@@ -33,7 +34,7 @@ ingress:
   hosts:
     - host: chart-example.local
       paths:
-        - path: /
+        - path: /repo
           pathType: ImplementationSpecific
   tls: []
   #  - secretName: chart-example-tls
