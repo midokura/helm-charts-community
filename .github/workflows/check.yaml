@@ -21,6 +21,7 @@ jobs:
         with:
           files: 'charts/**'
           dir_names: true
+          quotepath: false
           json: true
 
       - name: Return output
