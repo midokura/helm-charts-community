@@ -22,6 +22,7 @@ jobs:
           files: 'charts/**'
           dir_names: true
           dir_names_max_depth: "2"
+          json: true
           json_raw_format: true
 
       - name: Return output
