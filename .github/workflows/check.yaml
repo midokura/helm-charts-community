@@ -21,8 +21,8 @@ jobs:
         with:
           files: 'charts/**'
           dir_names: true
-          quotepath: false
-          json: true
+          dir_names_max_depth: "2"
+          json_raw_format: true
 
       - name: Return output
         env:
