@@ -8,7 +8,7 @@ jobs:
     name: list changes
     runs-on: ubuntu-latest
     outputs:
-      folders: ${{ steps.changed-files.outputs.all_modified_files	}}
+      folders: ${{ steps.changed-files.outputs.all_modified_files }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        path: ${{ needs.list.outputs.folders }}
+        path: ${{ fromJson(needs.list.outputs.folders) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
