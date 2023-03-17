@@ -51,8 +51,6 @@ spec:
             httpGet:
               path: /repo/api/v1/version
               port: http
-              failureThreshold: 40
-              periodSeconds: 5
           volumeMounts:
             - name: repository
               mountPath: {{ .Values.persistence.mountPath }}
@@ -69,17 +67,9 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ include "fossology.fullname" . }}-config
-          startupProbe:
-            tcpSocket:
-              port: 24693
-              failureThreshold: 40
-              periodSeconds: 5
           readinessProbe:
             tcpSocket:
               port: 24693
-              failureThreshold: 3
-              periodSeconds: 10
-              successThreshold: 1
           ports:
             - name: scheduler
               containerPort: 24693

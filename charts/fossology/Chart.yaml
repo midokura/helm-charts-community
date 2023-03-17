@@ -15,12 +15,12 @@ maintainers:
   - name: David Girón
     url: https://github.com/duhow
 
-version: 0.2.0
+version: 0.1.1
 # renovate: datasource=docker depName=fossology/fossology
 appVersion: 4.2.1
 
 dependencies:
   - name: postgresql
     repository: https://charts.bitnami.com/bitnami
-    version: 12.2.3
+    version: 11.1.28
     condition: postgresql.install
