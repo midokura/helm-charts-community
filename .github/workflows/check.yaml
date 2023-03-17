@@ -23,6 +23,12 @@ jobs:
           dir_names: true
           json: true
 
+      - name: Return output
+        env:
+          OUTPUT: ${{ steps.changed-files.outputs.all_modified_files }}
+        run: |
+          echo $OUTPUT
+
   check:
     name: Check folder ${{ matrix.path }}
     runs-on: ubuntu-latest
