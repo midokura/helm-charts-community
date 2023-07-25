@@ -512,6 +512,16 @@ entries:
   nginx-static:
   - apiVersion: v2
     appVersion: 1.23.0
+    created: "2023-07-25T13:57:00.470327027Z"
+    description: Deploy nginx with static pages
+    digest: 8a75016a08c8ce754a9ef9d4073764b3cb709417e5152b7e9ab7cc25a70257c1
+    name: nginx-static
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/nginx-static-0.1.3/nginx-static-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 1.23.0
     created: "2023-01-13T11:34:01.143393965Z"
     description: Deploy nginx with static pages
     digest: 14a6b115a1ab8bf4184e7ab90056de4323284642fe8bcaff1bf0de527f66645b
@@ -802,4 +812,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2023-03-17T15:15:00.000000000Z"
+generated: "2023-07-25T13:57:00.470415928Z"
