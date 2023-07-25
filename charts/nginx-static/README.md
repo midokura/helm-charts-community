@@ -16,3 +16,13 @@ image:
 
 Optionally, you can use `persistence` to store permanent data (suitable for custom images).
 Note that this will still use `Deployment` type, so it requires to run as a **single replica**, unless you provide a StorageClass with `ReadWriteMany` support.
+
+## nginx configuration
+
+If you have your own customized image including `server` settings definition, you can disable the mount of default configuration.
+
+```yaml
+configNginx: false
+```
+
+If you want to keep using default `nginx` application, you can expand the `default.conf` with your own settings - for example, redirect a location to somewhere else.

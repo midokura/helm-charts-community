@@ -176,7 +176,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if or (.Values.git.enabled) (.Values.persistence.enabled) }}
+      {{- if or (.Values.git.enabled) (.Values.persistence.enabled) (.Values.configNginx) }}
       volumes:
       {{- end }}
       {{- if .Values.persistence.enabled }}
@@ -184,16 +184,16 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.existingClaim | default (include "nginx-static.fullname" .) }}
       {{- end -}}
+      {{- if .Values.configNginx }}
+        - name: nginx-conf
+          configMap:
+            name: {{ include "nginx-static.fullname" . }}-config
+      {{- end }}
       {{- if .Values.git.enabled }}
         - name: nginx-html
           emptyDir:
         {{- if .Values.useMemoryStorage }}
             medium: Memory
-        {{- end }}
-        {{- if .Values.configNginx }}
-        - name: nginx-conf
-          configMap:
-            name: {{ include "nginx-static.fullname" . }}-config
         {{- end }}
         - name: ssh-key
           secret:
