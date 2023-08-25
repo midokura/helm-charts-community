@@ -34,7 +34,7 @@ dependencies:
       - distributed-poller
   - name: redis
     repository: https://charts.bitnami.com/bitnami
-    version: 16.8.9
+    version: 17.17.1
     condition: redis.install
     tags:
       - distributed-poller
