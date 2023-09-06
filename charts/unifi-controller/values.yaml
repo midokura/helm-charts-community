@@ -30,7 +30,21 @@ hostNetwork: true
 
 service:
   type: ClusterIP
+  annotations: {}
+  loadBalancerIP: null
   port: 8443
+  ports:
+    tcp:
+      https: true
+      http: false
+      guest-https: false
+      guest-http: false
+      throughput: false
+    udp:
+      stun: false
+      l2-discovery: false
+      ap-discovery: false
+      syslog: false
 
 ingress:
   enabled: false
