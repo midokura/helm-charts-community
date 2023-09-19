@@ -1,3 +1,6 @@
-**/*-values.yaml
+charts/*/*.yaml
+!charts/*/Chart.yaml
+!charts/*/values.yaml
+**/values-*.yaml
 **/Chart.lock
 charts/**/charts/

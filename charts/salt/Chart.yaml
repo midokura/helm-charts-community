@@ -1,0 +1,7 @@
+apiVersion: v2
+name: salt
+description: Software to automate the management and configuration of any infrastructure or application at scale.
+type: application
+
+version: 0.0.1
+appVersion: "3006.3"

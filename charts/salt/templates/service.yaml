@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "salt.fullname" . }}-master
+  labels:
+    {{- include "salt.master.labels" . | nindent 4 }}
+spec:
+{{- with .Values.master.service }}
+  type: {{ .type }}
+  {{- if .loadBalancerIP }}
+  loadBalancerIP: {{ .loadBalancerIP }}
+  {{- end }}
+  # add source IP address
+  externalTrafficPolicy: Local
+{{- end }}
+  ports:
+  {{- range $name, $port := .Values.master.service.ports }}
+  {{- if $port }}
+    - port: {{ $port }}
+      targetPort: {{ $name }}
+      protocol: TCP
+      name: {{ $name }}
+  {{- end }}
+  {{- end }}
+  selector:
+    {{- include "salt.master.selectorLabels" . | nindent 4 }}

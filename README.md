@@ -14,6 +14,7 @@ If this content helps you, [give this repo a star!](https://github.com/midokura/
 | [Webhook.site](https://github.com/midokura/helm-charts-community/tree/main/charts/webhook-site) | [webhooksite/webhook.site](https://github.com/webhooksite/webhook.site) |
 | [nginx-static](https://github.com/midokura/helm-charts-community/tree/main/charts/nginx-static) | [nginx](https://hub.docker.com/_/nginx) |
 | [Errbot](https://github.com/midokura/helm-charts-community/tree/main/charts/errbot) | [errbotio/errbot](https://github.com/errbotio/errbot) |
+| [Salt / SaltStack](https://github.com/midokura/helm-charts-community/tree/main/charts/salt) | [saltstack/salt](https://github.com/saltstack/salt) |
 | [Folding@Home](https://github.com/midokura/helm-charts-community/tree/main/charts/folding-at-home) | [foldingathome/fah-gpu](https://hub.docker.com/r/foldingathome/fah-gpu) |
 
 Feel free to contribute back or report any bugs you find.
