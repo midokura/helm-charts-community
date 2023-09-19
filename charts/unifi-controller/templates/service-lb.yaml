@@ -2,8 +2,8 @@
 
 {{- $proto := "tcp" }}
 {{- $hasServicesEnabled := false }}
-{{- range $svc, $enabled := get .Values.service.ports $proto }}
-{{- if $enabled }}
+{{- range $svc, $data := get .Values.service.ports $proto }}
+{{- if $data.enabled }}
 {{- $hasServicesEnabled = true }}
 {{- end }}
 {{- end }}
@@ -26,9 +26,10 @@ spec:
   loadBalancerIP: {{ . | quote }}
   {{- end }}
   ports:
-  {{- range $svc, $enabled := get .Values.service.ports $proto }}
-  {{- if $enabled }}
+  {{- range $svc, $data := get .Values.service.ports $proto }}
+  {{- if $data.enabled }}
   - name: {{ $svc }}
+    port: {{ $data.port }}
     protocol: {{ $proto | upper }}
     targetPort: {{ $svc }}
   {{- end }}
@@ -40,8 +41,8 @@ spec:
 
 {{- $proto := "udp" }}
 {{- $hasServicesEnabled := false }}
-{{- range $svc, $enabled := get .Values.service.ports $proto }}
-{{- if $enabled }}
+{{- range $svc, $data := get .Values.service.ports $proto }}
+{{- if $data.enabled }}
 {{- $hasServicesEnabled = true }}
 {{- end }}
 {{- end }}
@@ -64,9 +65,10 @@ spec:
   loadBalancerIP: {{ . | quote }}
   {{- end }}
   ports:
-  {{- range $svc, $enabled := get .Values.service.ports $proto }}
-  {{- if $enabled }}
+  {{- range $svc, $data := get .Values.service.ports $proto }}
+  {{- if $data.enabled }}
   - name: {{ $svc }}
+    port: {{ $data.port }}
     protocol: {{ $proto | upper }}
     targetPort: {{ $svc }}
   {{- end }}

@@ -13,6 +13,6 @@ maintainers:
   - name: David Girón
     url: https://github.com/duhow
 
-version: 0.0.4
+version: 0.1.0
 # renovate: datasource=docker depName=linuxserver/unifi-controller
 appVersion: 7.3.83

@@ -33,18 +33,37 @@ service:
   annotations: {}
   loadBalancerIP: null
   port: 8443
+  # -- Used for LoadBalancer Service type
   ports:
     tcp:
-      https: true
-      http: false
-      guest-https: false
-      guest-http: false
-      throughput: false
+      https:
+        enabled: true
+        port: 8443
+      http:
+        enabled: false
+        port: 8080
+      guest-https:
+        enabled: false
+        port: 8843
+      guest-http:
+        enabled: false
+        port: 8880
+      throughput:
+        enabled: false
+        port: 6789
     udp:
-      stun: false
-      l2-discovery: false
-      ap-discovery: false
-      syslog: false
+      stun:
+        enabled: false
+        port: 3478
+      l2-discovery:
+        enabled: false
+        port: 1900
+      ap-discovery:
+        enabled: false
+        port: 10001
+      syslog:
+        enabled: false
+        port: 5514
 
 ingress:
   enabled: false
