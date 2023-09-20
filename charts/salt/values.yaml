@@ -15,6 +15,9 @@ nameOverride: ""
 fullnameOverride: ""
 
 master:
+  # -- Change salt-master file_root directory where state / top data is stored
+  # Use it along with git-sync for syncronized repos
+  file_root: ""
   image:
     repository: saltstack/salt
     pullPolicy: IfNotPresent
