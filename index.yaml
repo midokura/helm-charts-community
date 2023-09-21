@@ -600,6 +600,33 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/nginx-static-0.0.5/nginx-static-0.0.5.tgz
     version: 0.0.5
+  salt:
+  - apiVersion: v2
+    appVersion: "3006.3"
+    created: "2023-09-21T10:39:23.375609394Z"
+    description: Software to automate the management and configuration of any infrastructure
+      or application at scale.
+    digest: 490bd8862aaa60886fa158e6090d3489f600a6f86c07743f8a6f3d61949359b4
+    home: https://github.com/midokura/helm-charts-community/tree/main/salt
+    icon: https://saltproject.io/images/logo.svg
+    keywords:
+    - configuration-management
+    - infrastructure-management
+    - cloud-management
+    - event-management
+    - remote-execution
+    - infrastructure-automation
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: salt
+    sources:
+    - https://github.com/saltstack/salt
+    - https://gitlab.com/saltstack/open/saltdocker
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/salt-0.0.1/salt-0.0.1.tgz
+    version: 0.0.1
   sshportal:
   - apiVersion: v2
     appVersion: 1.19.3
@@ -812,4 +839,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2023-07-25T13:57:00.470415928Z"
+generated: "2023-09-21T10:39:23.376064112Z"
