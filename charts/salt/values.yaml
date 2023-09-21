@@ -35,6 +35,8 @@ master:
   resources: {}
   service:
     type: ClusterIP
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
     ports:
       publish:
         expose: true

@@ -12,6 +12,10 @@ spec:
   {{- end }}
   # add source IP address
   externalTrafficPolicy: Local
+  {{- if .loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{ .loadBalancerSourceRanges | toYaml | nindent 4 }}
+  {{- end }}
 {{- end }}
   ports:
   {{- range $name, $port := .Values.master.service.ports }}
