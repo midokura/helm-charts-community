@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "salt.fullname" . }}-config
+  labels:
+    {{- include "salt.master.labels" . | nindent 4 }}
+data:
+  master.conf: |
+    color: False
+    auto_accept: False
+    file_roots:
+      base:
+        {{- if .Values.master.file_root }}
+        - {{ .Values.master.file_root }}
+        {{- else }}
+        - /srv/salt
+        {{- end }}
+    #env_order: ["base"]

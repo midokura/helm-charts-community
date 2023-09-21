@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "salt.fullname" . }}-master
+  labels:
+    {{- include "salt.master.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.master.replicaCount }}
+  serviceName: {{ include "salt.fullname" . }}-master
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      {{- include "salt.master.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.master.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/version: {{ .Values.master.image.tag | default .Chart.AppVersion | quote }}
+        {{- include "salt.master.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "salt.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.master.podSecurityContext | nindent 8 }}
+      containers:
+        - name: app
+          securityContext:
+            {{- toYaml .Values.master.securityContext | nindent 12 }}
+          {{- with .Values.master.image }}
+          image: "{{ .repository }}:{{ .tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          ports:
+            {{- range $name, $port := .Values.master.service.ports }}
+            - name: {{ $name }}
+              containerPort: {{ $port.containerPort }}
+              protocol: TCP
+            {{- end }}
+          resources:
+            {{- toYaml .Values.master.resources | nindent 12 }}
+          volumeMounts:
+            - name: salt-data
+              mountPath: /srv/salt
+              subPath: salt
+            - name: salt-data
+              mountPath: /etc/salt/pki
+              subPath: pki
+            - name: config
+              mountPath: /etc/salt/master.d/master.conf
+              subPath: master.conf
+        {{- if .Values.gitsync.enabled }}
+        - name: git-sync
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- with .Values.gitsync.image }}
+          image: "{{ .repository }}{{ if .digest }}@{{ .digest }}{{ else }}:{{ .tag }}{{ end }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          args:
+          {{- range $key, $val := .Values.gitsync.config }}
+          - {{ printf "--%s" $key | quote }}
+          {{- if not (deepEqual $val true) }}
+          - {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          env:
+          {{- range $key, $val := .Values.gitsync.env }}
+          - name: {{ $key }}
+            value: {{ $val | quote }}
+          {{- end }}
+          {{- with .Values.gitsync.envFrom }}
+          envFrom: {{ . | toYaml | nindent 10 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.gitsync.resources | nindent 12 }}
+          volumeMounts:
+          - name: salt-data
+            mountPath: /srv/salt
+            subPath: salt
+          {{- with .Values.gitsync.extraVolumeMounts }}
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+        {{- end }}
+      {{- with .Values.master.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.master.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.master.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            optional: true
+            name: {{ include "salt.fullname" . }}-config
+        {{- if and .Values.master.persistence.enabled .Values.master.persistence.existingClaim }}
+        - name: salt-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.master.persistence.existingClaim . }}
+        {{- else if not .Values.master.persistence.enabled }}
+        - name: salt-data
+          emptyDir: {}
+  {{- else if and .Values.master.persistence.enabled (not .Values.master.persistence.existingClaim) }}
+  volumeClaimTemplates:
+    - metadata:
+        name: salt-data
+        labels:
+          {{ include "salt.master.labels" . | nindent 10 }}
+        {{- if .Values.master.persistence.annotations }}
+        annotations:
+          {{- toYaml .Values.master.persistence.annotations | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          {{- range .Values.master.persistence.accessModes }}
+          - {{ . | quote }}
+          {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.master.persistence.size | quote }}
+        storageClass: {{ .Values.master.persistence.storageClass }}
+        {{- if .Values.master.persistence.selector }}
+        selector:
+          {{- toYaml .Values.master.persistence.selector | nindent 10 }}
+        {{- end }}
+  {{- end }}

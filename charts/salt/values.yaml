@@ -1,0 +1,109 @@
+# Default values for salt.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+global:
+  image:
+    repository: saltstack/salt
+    pullPolicy: IfNotPresent
+    tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+master:
+  # -- Change salt-master file_root directory where state / top data is stored
+  # Use it along with git-sync for syncronized repos
+  file_root: ""
+  image:
+    repository: saltstack/salt
+    pullPolicy: IfNotPresent
+    tag: ""
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 450
+  securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  resources: {}
+  service:
+    type: ClusterIP
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+    ports:
+      publish:
+        expose: true
+        port: 4505
+        containerPort: 4505
+      return:
+        expose: true
+        port: 4506
+        containerPort: 4506
+      https:
+        expose: false
+        port: 8000
+        containerPort: 8000
+  persistence:
+    enabled: true
+    size: 4Gi
+    existingClaim: null
+    storageClass: ""
+    annotations: {}
+    accessModes:
+      #- ReadWriteMany
+      - ReadWriteOnce
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Sidecar container that pulls content from Git repository (eg. custom private plugins)
+gitsync:
+  enabled: false
+  image:
+    repository: gcr.io/k8s-staging-git-sync/git-sync
+    tag: v4.0.0
+    # digest: sha256:ad48c2dd8f5ae73e783c4a55bedb4cc13d51d347d157e6564c4debfd0fbd429d
+    digest: null
+    pullPolicy: IfNotPresent
+  env: {}
+  envFrom: []
+  resources: {}
+  # use .Values.extraVolumes to define resources
+  extraVolumeMounts: []
+  config:
+    # repo: https://github.com/kubernetes/git-sync
+    root: /srv/salt
+    ref: HEAD
+    period: 60s
