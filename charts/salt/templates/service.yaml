@@ -15,8 +15,8 @@ spec:
 {{- end }}
   ports:
   {{- range $name, $port := .Values.master.service.ports }}
-  {{- if $port }}
-    - port: {{ $port }}
+  {{- if $port.expose }}
+    - port: {{ $port.port }}
       targetPort: {{ $name }}
       protocol: TCP
       name: {{ $name }}

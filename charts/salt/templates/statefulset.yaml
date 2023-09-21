@@ -37,15 +37,11 @@ spec:
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           ports:
-            - name: publish
-              containerPort: {{ .Values.master.service.ports.publish }}
+            {{- range $name, $port := .Values.master.service.ports }}
+            - name: {{ $name }}
+              containerPort: {{ $port.containerPort }}
               protocol: TCP
-            - name: return
-              containerPort: {{ .Values.master.service.ports.return }}
-              protocol: TCP
-            - name: https
-              containerPort: 8000
-              protocol: TCP
+            {{- end }}
           resources:
             {{- toYaml .Values.master.resources | nindent 12 }}
           volumeMounts:

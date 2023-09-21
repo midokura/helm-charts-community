@@ -36,8 +36,18 @@ master:
   service:
     type: ClusterIP
     ports:
-      publish: 4505
-      return: 4506
+      publish:
+        expose: true
+        port: 4505
+        containerPort: 4505
+      return:
+        expose: true
+        port: 4506
+        containerPort: 4506
+      https:
+        expose: false
+        port: 8000
+        containerPort: 8000
   persistence:
     enabled: true
     size: 4Gi
