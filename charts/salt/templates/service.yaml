@@ -14,7 +14,7 @@ spec:
   externalTrafficPolicy: Local
   {{- if .loadBalancerSourceRanges }}
   loadBalancerSourceRanges:
-    {{ .loadBalancerSourceRanges | toYaml | nindent 4 }}
+    {{- .loadBalancerSourceRanges | toYaml | nindent 4 }}
   {{- end }}
 {{- end }}
   ports:

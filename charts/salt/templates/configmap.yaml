@@ -32,7 +32,7 @@ data:
       {{- end }}
     external_auth:
       rest:
-        ^url: {{ printf "http://%s-alcali:%s" $fullName .Values.alcali.service.port }}/api/token/verify/
+        ^url: {{ printf "http://%s-alcali:%d" $fullName (.Values.alcali.service.port | int) }}/api/token/verify/
         {{ .Values.alcali.adminUser }}:
           - .*
           - '@runner'

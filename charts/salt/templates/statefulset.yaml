@@ -28,6 +28,24 @@ spec:
       serviceAccountName: {{ include "salt.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.master.podSecurityContext | nindent 8 }}
+      {{- if and .Values.alcali.enabled .Values.alcali.initMigrationDb }}
+      initContainers:
+        - name: alcali-migrate
+          securityContext:
+            {{- toYaml .Values.alcali.securityContext | nindent 12 }}
+          {{- with .Values.alcali.image }}
+          image: {{ .repository }}:{{ .tag | default "latest" }}
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          command:
+          - alcali
+          - migrate
+          resources:
+            {{- toYaml .Values.alcali.resources | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: {{ include "salt.fullname" . }}-alcali
+      {{- end }}
       containers:
         - name: app
           securityContext:
@@ -66,7 +84,7 @@ spec:
           command:
           - alcali
           - runserver
-          - {{ printf "0.0.0.0:%s" .service.containerPort | quote }}
+          - {{ printf "0.0.0.0:%d" (.service.containerPort | int) | quote }}
           ports:
             - name: alcali
               containerPort: {{ .service.containerPort }}
