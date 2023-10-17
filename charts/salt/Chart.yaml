@@ -5,6 +5,8 @@ description: Software to automate the management and configuration of any infras
 keywords:
   - configuration-management
   - infrastructure-management
+  - infrastructure
+  - automation
   - cloud-management
   - event-management
   - remote-execution
