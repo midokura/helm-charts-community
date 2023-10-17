@@ -1,0 +1,30 @@
+{{- if .Values.alcali.enabled }}
+As you have enabled Alcali, be sure to:
+
+  {{- if eq .Values.master.image.repository "saltstack/salt" }}
+- Use a custom Docker image for saltstack/salt (master) containing Python packages for MySQL.
+  Run to build dependencies:
+      apk add mariadb-dev
+  Then install Python packages, either:
+    - mysqlclient
+    - pymysql (tested and working)
+  {{- end }}
+
+- create a superuser in Alcali:
+
+kubectl exec -it --namespace {{ .Release.Namespace }} {{ .Release.Name }}-master-0 -c alcali -- alcali createsuperuser --username {{ .Values.alcali.adminUser }}
+
+- Alcali username must be matching external_auth, defined in salt-master config, to allow actions.
+  Feel free to modify or extend config after installation.
+
+- manually install default MySQL Salt schema (check for section "mysql database schema"):
+
+https://docs.saltproject.io/en/latest/ref/returners/all/salt.returners.mysql.html
+
+Last, in order to view devices in Alcali UI:
+- refresh keys
+- refresh minions (takes 20s per device, ensure test.ping works)
+{{- end }}
+
+Enjoy!
+
