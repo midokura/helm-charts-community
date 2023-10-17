@@ -54,6 +54,33 @@ spec:
             - name: config
               mountPath: /etc/salt/master.d/master.conf
               subPath: master.conf
+        {{- if .Values.alcali.enabled }}
+        - name: alcali
+          securityContext:
+            {{- toYaml .Values.alcali.securityContext | nindent 12 }}
+          {{- with .Values.alcali.image }}
+          image: {{ .repository }}:{{ .tag | default "latest" }}
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          {{- with .Values.alcali }}
+          command:
+          - alcali
+          - runserver
+          - {{ printf "0.0.0.0:%s" .service.containerPort | quote }}
+          ports:
+            - name: alcali
+              containerPort: {{ .service.containerPort }}
+              protocol: TCP
+          env:
+            - name: DJANGO_DEBUG
+              value: {{ .debug | ternary "yes" "no" | quote }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.alcali.resources | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: {{ include "salt.fullname" . }}-alcali
+        {{- end }}
         {{- if .Values.gitsync.enabled }}
         - name: git-sync
           securityContext:

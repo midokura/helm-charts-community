@@ -1,13 +1,12 @@
+{{- $fullName := include "salt.fullname" . }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "salt.fullname" . }}-config
+  name: {{ printf "%s-config" ($fullName) }}
   labels:
     {{- include "salt.master.labels" . | nindent 4 }}
 data:
   master.conf: |
-    color: False
-    auto_accept: False
     file_roots:
       base:
         {{- if .Values.master.file_root }}
@@ -15,4 +14,33 @@ data:
         {{- else }}
         - /srv/salt
         {{- end }}
-    #env_order: ["base"]
+    {{- if .Values.alcali.enabled }}
+    netapi_enable_clients:
+      - local
+      - local_async
+      - runner
+      - runner_async
+      - wheel
+    event_return: [mysql]
+    master_job_cache: mysql
+      {{- with .Values.mysql }}
+    mysql.host: {{ .hostname | default (printf "%s-mysql" ($.Release.Name)) | quote }}
+    mysql.user: {{ .auth.username | quote }}
+    mysql.pass: {{ .auth.password | quote }}
+    mysql.db: {{ .auth.database | quote }}
+    mysql.port: {{ .primary.service.ports.mysql | default 3306 | int  }}
+      {{- end }}
+    external_auth:
+      rest:
+        ^url: {{ printf "http://%s-alcali:%s" $fullName .Values.alcali.service.port }}/api/token/verify/
+        {{ .Values.alcali.adminUser }}:
+          - .*
+          - '@runner'
+          - '@wheel'
+          - '@jobs'
+    keep_acl_in_token: True
+    {{- end }}
+
+    {{- if .Values.master.config }}
+      {{- toYaml .Values.master.config | nindent 4 }}
+    {{- end }}

@@ -14,10 +14,68 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+alcali:
+  enabled: false
+  # -- User to authorize to external_auth in salt-master, you may need to update it.
+  adminUser: alcali
+  debug: false
+  secretKey: "thisisnotagoodsecret.orisit?"
+  # -- Set an init-container to start db migration (during setup or upgrades)
+  initMigrationDb: true
+  image:
+    repository: latenighttales/alcali
+    pullPolicy: IfNotPresent
+    tag: "3003.1.0"
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 450
+  securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  resources: {}
+  service:
+    type: ClusterIP
+    port: 8080
+    containerPort: 8080
+
+timezone: &timezone UTC
+
+mysql:
+  install: true
+  serviceAccount:
+    create: false
+  auth:
+    database: salt
+    username: alcali
+    password: alcali
+    rootPassword: alcali
+  volumePermissions:
+    enabled: true
+  primary:
+    service:
+      ports:
+        mysql: 3306
+    extraEnvVars:
+      - name: TZ
+        value: *timezone
+    persistence:
+      enabled: true
+      size: 2Gi
+
 master:
   # -- Change salt-master file_root directory where state / top data is stored
   # Use it along with git-sync for syncronized repos
   file_root: ""
+  # -- Define or extend salt-master config
+  config:
+    log_level: DEBUG
+    keep_jobs_seconds: 0
+    color: False
+    auto_accept: False
   image:
     repository: saltstack/salt
     pullPolicy: IfNotPresent

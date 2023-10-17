@@ -9,6 +9,7 @@ keywords:
   - event-management
   - remote-execution
   - infrastructure-automation
+  - saltstack
 home: https://github.com/midokura/helm-charts-community/tree/main/salt
 icon: https://saltproject.io/images/logo.svg
 sources:
@@ -18,6 +19,13 @@ maintainers:
   - name: David Girón
     url: https://github.com/duhow
 
-version: 0.0.1
+version: 0.0.2
 # renovate: datasource=docker depName=saltstack/salt
 appVersion: "3006.3"
+
+dependencies:
+  - name: mariadb
+    alias: mysql
+    repository: https://charts.bitnami.com/bitnami
+    version: 14.0.2
+    condition: alcali.enabled, mysql.install
