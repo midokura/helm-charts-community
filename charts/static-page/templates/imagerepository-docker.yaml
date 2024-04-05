@@ -1,0 +1,18 @@
+{{- if .Values.updateAutomation.docker.enabled }}
+# Declaration of an image repository
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: {{ include "docs.fullname" . }}-docker
+  labels:
+    {{- include "docs.labels" . | nindent 4 }}
+spec:
+  # We get this value from the image's repo directly
+  image: {{ .Values.image.repository }}
+  interval: 5m
+  # Use the first imagePullSecrets as ref to fetch the image
+  {{- with (first .Values.imagePullSecrets) }}
+  secretRef:
+    name: {{ .name }}
+  {{- end }}
+{{- end }}

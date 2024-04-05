@@ -1,0 +1,50 @@
+{{- if .Values.updateAutomation.docker.enabled }}
+# Opens a PR in a Flux Git repository whenever a new image is detected by the scanner
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: {{ include "docs.fullname" . }}-docker
+  labels:
+    {{- include "docs.labels" . | nindent 4 }}
+spec:
+  {{- with .Values.updateAutomation.fluxRepository }}
+  interval: {{ .checkInterval }}
+  sourceRef:
+    kind: GitRepository
+    name: {{ required "A git repository name must be provided in .Values.updateAutomation.fluxRepository.gitRepositoryRef" .gitRepositoryRef }}
+    namespace: {{ .namespace }}
+  update:
+    path: {{ .path }}
+    strategy: Setters
+  {{- end }}
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: fluxcdbot@users.noreply.github.com
+        name: fluxcdbot
+      messageTemplate: |
+          {{`Automated Docker image update
+
+          Automation name: {{ .AutomationObject }}
+          
+          Files:
+          {{ range $filename, $_ := .Updated.Files -}}
+          - {{ $filename }}
+          {{ end -}}
+          
+          Objects:
+          {{ range $resource, $_ := .Updated.Objects -}}
+          - {{ $resource.Kind }} {{ $resource.Name }}
+          {{ end -}}
+          
+          Images:
+          {{ range .Updated.Images -}}
+          - {{.}}
+          {{ end -}}
+          `}}
+    push:
+      branch: automatic-flux/{{ include "docs.fullname" . }}-docker
+{{- end }}
