@@ -1,0 +1,21 @@
+{{- if .Values.updateAutomation.docker.enabled }}
+# Checks for image updates in a remote repository given a semver range
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: {{ include "docs.fullname" . }}-docker
+  labels:
+    {{- include "docs.labels" . | nindent 4 }}
+spec:
+  imageRepositoryRef:
+    name: {{ include "docs.fullname" . }}-docker
+    namespace: {{ .Release.Namespace }}
+  {{- with .Values.updateAutomation.docker.policy }}
+  policy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.updateAutomation.docker.filterTags }}
+  filterTags:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
