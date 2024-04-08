@@ -682,6 +682,24 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/sshportal-0.1.0/sshportal-0.1.0.tgz
     version: 0.1.0
+  static-page:
+  - apiVersion: v2
+    appVersion: 0.0.0
+    created: "2024-04-08T07:08:16.330018335Z"
+    description: Deploy a simple Docker image as static page.
+    digest: 1ac14bcd0830ba37838d40259b5928c64a503529e1737e18535fb0fb5bc781a9
+    keywords:
+    - docs
+    - midokura
+    kubeVersion: '>= 1.25.0'
+    maintainers:
+    - email: team-devops@midokura.com
+      name: Midokura DevOps
+    name: static-page
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/static-page-0.1.0/static-page-0.1.0.tgz
+    version: 0.1.0
   unifi:
   - apiVersion: v2
     appVersion: 7.3.83
@@ -839,4 +857,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2023-09-21T10:39:23.376064112Z"
+generated: "2024-04-08T07:08:16.330086521Z"
