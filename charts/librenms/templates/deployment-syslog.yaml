@@ -26,6 +26,19 @@ spec:
       serviceAccountName: {{ include "librenms.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.syslog.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: copy-config
+          image: busybox
+          command:
+            - sh
+            - '-c'
+            - cp -r /tmp/config/. /data/config/
+          resources: {}
+          volumeMounts:
+            - name: config
+              mountPath: /tmp/config
+            - name: data
+              mountPath: /data
       containers:
         - name: syslog
           securityContext:
@@ -76,8 +89,6 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-            - name: config
-              mountPath: /opt/librenms/config.d
       volumes:
         - name: data
         - name: config

@@ -170,6 +170,8 @@ redis:
   master:
     persistence:
       enabled: false
+    disableCommands:
+    - FLUSHALL
 
 memcached:
   install: true

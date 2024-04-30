@@ -43,6 +43,18 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+        - name: copy-config
+          image: busybox
+          command:
+            - sh
+            - '-c'
+            - cp -r /tmp/config/. /data/config/
+          resources: {}
+          volumeMounts:
+            - name: config
+              mountPath: /tmp/config
+            - name: data
+              mountPath: /data
       {{- if .Values.nagios }}
         - name: nagios-plugins
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -145,8 +157,6 @@ spec:
               mountPath: /data
             - name: rrd-journal
               mountPath: /var/lib/rrdcached/journal
-            - name: config
-              mountPath: /opt/librenms/config.d
             {{- if .Values.smokeping.enabled }}
             - name: config-smokeping
               mountPath: /etc/smokeping/config.d
