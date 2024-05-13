@@ -2,6 +2,6 @@ apiVersion: v2
 name: nginx-static
 description: Deploy nginx with static pages
 type: application
-version: 0.1.3
+version: 0.1.4
 # renovate: datasource=docker depName=nginx
 appVersion: 1.23.0
