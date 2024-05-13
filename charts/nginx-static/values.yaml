@@ -57,6 +57,8 @@ tolerations: []
 
 affinity: {}
 
+envFrom: []
+
 readinessProbe:
   enabled: false
   path: "/"
