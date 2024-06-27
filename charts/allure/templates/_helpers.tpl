@@ -41,8 +41,10 @@ helm.sh/chart: {{ include "allure.chart" . }}
 app.kubernetes.io/version: {{ .Values.api.image.tag | default .Chart.AppVersion }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.global -}}
 {{- if .Values.global.team }}
 team: {{ .Values.global.team | quote }}
+{{- end }}
 {{- end }}
 {{- end }}
 
