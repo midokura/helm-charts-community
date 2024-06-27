@@ -6,6 +6,8 @@
 
 This chart does not require any additional component to be installed.
 
+However, if you enable [Alcali](https://alcali.dev), then [MariaDB](https://artifacthub.io/packages/helm/bitnami/mariadb) will be enabled by default.
+
 ## Installing the Chart
 
 To install the chart with the release name `my-release`:
