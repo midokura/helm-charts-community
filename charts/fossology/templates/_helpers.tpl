@@ -39,6 +39,9 @@ helm.sh/chart: {{ include "fossology.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.global.team }}
+team: {{ .Values.global.team | quote }}
+{{- end }}
 {{- end }}
 
 {{- define "fossology.scheduler.labels" -}}

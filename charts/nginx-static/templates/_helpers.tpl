@@ -41,7 +41,9 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
-
+{{- if .Values.global.team }}
+team: {{ .Values.global.team | quote }}
+{{- end }}
 {{/*
 Selector labels
 */}}
