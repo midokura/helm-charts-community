@@ -1,0 +1,80 @@
+{{- if eq .Values.service.type "LoadBalancer" }}
+
+{{- $proto := "tcp" }}
+{{- $hasServicesEnabled := false }}
+{{- range $svc, $data := get .Values.service.ports $proto }}
+{{- if $data.enabled }}
+{{- $hasServicesEnabled = true }}
+{{- end }}
+{{- end }}
+
+{{- if $hasServicesEnabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "unifi.fullname" . }}-{{ $proto }}
+  labels:
+    {{- include "unifi.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- with .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ . | quote }}
+  {{- end }}
+  ports:
+  {{- range $svc, $data := get .Values.service.ports $proto }}
+  {{- if $data.enabled }}
+  - name: {{ $svc }}
+    port: {{ $data.port }}
+    protocol: {{ $proto | upper }}
+    targetPort: {{ $svc }}
+  {{- end }}
+  {{- end }}
+  selector:
+    {{- include "unifi.selectorLabels" . | nindent 4 }}
+{{- end }}
+
+
+{{- $proto := "udp" }}
+{{- $hasServicesEnabled := false }}
+{{- range $svc, $data := get .Values.service.ports $proto }}
+{{- if $data.enabled }}
+{{- $hasServicesEnabled = true }}
+{{- end }}
+{{- end }}
+
+{{- if $hasServicesEnabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "unifi.fullname" . }}-{{ $proto }}
+  labels:
+    {{- include "unifi.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- with .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ . | quote }}
+  {{- end }}
+  ports:
+  {{- range $svc, $data := get .Values.service.ports $proto }}
+  {{- if $data.enabled }}
+  - name: {{ $svc }}
+    port: {{ $data.port }}
+    protocol: {{ $proto | upper }}
+    targetPort: {{ $svc }}
+  {{- end }}
+  {{- end }}
+  selector:
+    {{- include "unifi.selectorLabels" . | nindent 4 }}
+{{- end }}
+
+{{- end }}
