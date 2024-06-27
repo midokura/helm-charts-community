@@ -9,7 +9,7 @@ startErrbot: true
 
 image:
   repository: errbotio/errbot
-  tag: 6.1.9
+  tag: 6.2.0
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
