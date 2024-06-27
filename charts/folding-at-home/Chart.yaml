@@ -12,6 +12,6 @@ maintainers:
   - name: David Girón
     url: https://github.com/duhow
 
-version: 0.0.1
+version: 0.0.2
 # renovate: datasource=docker depName=linuxserver/foldingathome
 appVersion: 7.6.21
