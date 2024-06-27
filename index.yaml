@@ -3,6 +3,17 @@ entries:
   allure:
   - apiVersion: v2
     appVersion: 2.19.0
+    created: "2024-06-27T12:25:30.783894314Z"
+    description: A Helm chart for Allure Report
+    digest: bc991b12e6369478a7b777de77e868ac828ea7cc4e2b194ef7c0dc81cb23e69d
+    kubeVersion: '>= 1.19.0-0'
+    name: allure
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/allure-0.1.2/allure-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 2.19.0
     created: "2022-09-30T15:17:22.636913609Z"
     description: A Helm chart for Allure Report
     digest: efd25d32db9b04b0d8f3fa6b3c5dc23829a6014ef7e3979047553bbae561296c
@@ -64,6 +75,33 @@ entries:
     - https://github.com/midokura/helm-charts-community/releases/download/allure-0.0.1/allure-0.0.1.tgz
     version: 0.0.1
   errbot:
+  - apiVersion: v2
+    appVersion: 6.1.9
+    created: "2024-06-27T12:25:30.917957513Z"
+    dependencies:
+    - condition: redis.install
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.x.x
+    description: A daemon that connects to your favorite chat service and brings your
+      tools into the conversation.
+    digest: 7b96159f2b204f82ee7e0befbe805d0b160c7c109dabd76e64e7d6a4fdf2f5ad
+    home: https://github.com/midokura/helm-charts-community/tree/main/errbot
+    icon: https://errbot.readthedocs.io/en/latest/_static/errbot.png
+    keywords:
+    - gitops
+    - bot
+    - chatbot
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: errbot
+    sources:
+    - https://github.com/errbotio/errbot
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/errbot-0.0.4/errbot-0.0.4.tgz
+    version: 0.0.4
   - apiVersion: v2
     appVersion: 6.1.9
     created: "2022-10-09T19:50:50.067789786Z"
@@ -148,6 +186,26 @@ entries:
   folding-at-home:
   - apiVersion: v2
     appVersion: 7.6.21
+    created: "2024-06-27T12:25:31.04463659Z"
+    description: A distributed computing project for simulating protein dynamics,
+      including the process of protein folding and the movements of proteins implicated
+      in a variety of diseases.
+    digest: cb795a76718efcb7343a8f3fef277fc06e4ef775f0756620a60f041a30372a85
+    home: https://github.com/midokura/helm-charts-community/tree/main/folding-at-home
+    icon: https://avatars.githubusercontent.com/u/4166223?s=200&v=4
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: folding-at-home
+    sources:
+    - https://hub.docker.com/r/linuxserver/foldingathome
+    - https://hub.docker.com/r/foldingathome/fah-gpu
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/folding-at-home-0.0.2/folding-at-home-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 7.6.21
     created: "2022-10-28T12:47:33.979764732Z"
     description: A distributed computing project for simulating protein dynamics,
       including the process of protein folding and the movements of proteins implicated
@@ -167,6 +225,33 @@ entries:
     - https://github.com/midokura/helm-charts-community/releases/download/folding-at-home-0.0.1/folding-at-home-0.0.1.tgz
     version: 0.0.1
   fossology:
+  - apiVersion: v2
+    appVersion: 4.2.1
+    created: "2024-06-27T12:25:31.151305236Z"
+    dependencies:
+    - condition: postgresql.install
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.2.3
+    description: Open source license compliance software system and toolkit
+    digest: 33637c6c5db9aa78312c1b4ec3e01fabf6b7efce8fb5c4acff33ca10db2a74c0
+    home: https://github.com/midokura/helm-charts-community/tree/main/fossology
+    icon: https://www.fossology.org/wp-content/uploads/sites/39/2017/08/logo_fossology.png
+    keywords:
+    - nms
+    - network
+    - snmp
+    - monitoring
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: fossology
+    sources:
+    - https://github.com/fossology/fossology
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/fossology-0.2.1/fossology-0.2.1.tgz
+    version: 0.2.1
   - apiVersion: v2
     appVersion: 4.2.1
     created: "2023-03-16T16:03:31.222188937Z"
@@ -222,6 +307,47 @@ entries:
     - https://github.com/midokura/helm-charts-community/releases/download/fossology-0.1.0/fossology-0.1.0.tgz
     version: 0.1.0
   librenms:
+  - apiVersion: v2
+    appVersion: 22.4.1
+    created: "2024-06-27T12:25:31.278462274Z"
+    dependencies:
+    - alias: mysql
+      condition: mysql.install
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.5.7
+    - condition: memcached.install
+      name: memcached
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - distributed-poller
+      version: 6.14.0
+    - condition: redis.install
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - distributed-poller
+      version: 16.13.2
+    description: SNMP monitoring for network devices
+    digest: f9ebfb00ffd3467ae7cc699530f3e91df2d8e75bce30aec36103a351531fe741
+    home: https://github.com/midokura/helm-charts-community/tree/main/librenms
+    icon: https://www.librenms.org/images/android-chrome-192x192.png
+    keywords:
+    - nms
+    - network
+    - snmp
+    - monitoring
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: librenms
+    sources:
+    - https://github.com/librenms/docker
+    - https://github.com/crazy-max/docker-rrdcached
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/librenms-0.3.1/librenms-0.3.1.tgz
+    version: 0.3.1
   - apiVersion: v2
     appVersion: 22.4.1
     created: "2022-05-17T13:41:20.074804286Z"
@@ -512,6 +638,16 @@ entries:
   nginx-static:
   - apiVersion: v2
     appVersion: 1.23.0
+    created: "2024-06-27T12:25:31.400407485Z"
+    description: Deploy nginx with static pages
+    digest: d89efd0b15f28616e8e4aede19f86c59cbdcedd0f0bcde2c395253cc46da0631
+    name: nginx-static
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/nginx-static-0.1.5/nginx-static-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: 1.23.0
     created: "2024-05-13T12:17:55.338617434Z"
     description: Deploy nginx with static pages
     digest: 6ed5c28aba7e738e16c9172c6eab2c48237f1f7a73260cafde4a85484cc58a17
@@ -613,6 +749,32 @@ entries:
   salt:
   - apiVersion: v2
     appVersion: "3006.3"
+    created: "2024-06-27T12:25:31.506236596Z"
+    description: Software to automate the management and configuration of any infrastructure
+      or application at scale.
+    digest: 1441e3825dd3576e8b8b233b2debbd7c6b50df7424877ec1bcd0ec892a99c4d7
+    home: https://github.com/midokura/helm-charts-community/tree/main/salt
+    icon: https://saltproject.io/images/logo.svg
+    keywords:
+    - configuration-management
+    - infrastructure-management
+    - cloud-management
+    - event-management
+    - remote-execution
+    - infrastructure-automation
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: salt
+    sources:
+    - https://github.com/saltstack/salt
+    - https://gitlab.com/saltstack/open/saltdocker
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/salt-0.0.2/salt-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: "3006.3"
     created: "2023-09-21T10:39:23.375609394Z"
     description: Software to automate the management and configuration of any infrastructure
       or application at scale.
@@ -638,6 +800,24 @@ entries:
     - https://github.com/midokura/helm-charts-community/releases/download/salt-0.0.1/salt-0.0.1.tgz
     version: 0.0.1
   sshportal:
+  - apiVersion: v2
+    appVersion: 1.19.3
+    created: "2024-06-27T12:25:31.602662465Z"
+    dependencies:
+    - alias: mysql
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.5.7
+    description: simple, fun and transparent SSH (and telnet) bastion server
+    digest: d10b322e28e31076d20a7cf1637959cbd93b7bdb10ebe06cfb2d079666778116
+    home: https://github.com/moul/sshportal
+    name: sshportal
+    sources:
+    - https://github.com/moul/sshportal
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/sshportal-0.1.3/sshportal-0.1.3.tgz
+    version: 0.1.3
   - apiVersion: v2
     appVersion: 1.19.3
     created: "2022-03-07T08:13:34.923706482Z"
@@ -695,6 +875,23 @@ entries:
   static-page:
   - apiVersion: v2
     appVersion: 0.0.0
+    created: "2024-06-27T12:25:31.708420384Z"
+    description: Deploy a simple Docker image as static page.
+    digest: a0343b3b25c81de1341dceb7bf116476a2fac039bfd8f146ec71525370b64405
+    keywords:
+    - docs
+    - midokura
+    kubeVersion: '>= 1.25.0'
+    maintainers:
+    - email: team-devops@midokura.com
+      name: Midokura DevOps
+    name: static-page
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/static-page-0.1.1/static-page-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.0.0
     created: "2024-04-08T07:08:16.330018335Z"
     description: Deploy a simple Docker image as static page.
     digest: 1ac14bcd0830ba37838d40259b5928c64a503529e1737e18535fb0fb5bc781a9
@@ -711,6 +908,26 @@ entries:
     - https://github.com/midokura/helm-charts-community/releases/download/static-page-0.1.0/static-page-0.1.0.tgz
     version: 0.1.0
   unifi:
+  - apiVersion: v2
+    appVersion: 7.3.83
+    created: "2024-06-27T12:25:31.835504552Z"
+    description: Manage all your Unifi devices through a central site.
+    digest: 5e0ce97dc82261ffba44e28ac35834d9358c358f039960b84c215197a4f3df5b
+    home: https://github.com/midokura/helm-charts-community/tree/main/unifi-controller
+    icon: https://avatars.githubusercontent.com/u/3934889?s=200
+    keywords:
+    - nms
+    - network
+    - monitoring
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: unifi
+    sources:
+    - https://hub.docker.com/r/linuxserver/unifi-controller
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/unifi-0.0.5/unifi-0.0.5.tgz
+    version: 0.0.5
   - apiVersion: v2
     appVersion: 7.3.83
     created: "2023-03-16T16:05:47.565853447Z"
@@ -794,6 +1011,31 @@ entries:
   webhook-site:
   - apiVersion: v2
     appVersion: "1.2"
+    created: "2024-06-27T12:25:31.968111231Z"
+    dependencies:
+    - condition: redis.install
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.13.2
+    description: Easily test HTTP webhooks
+    digest: f0410ac546ff4bc51a43185831798437bfb9f881d42827f00c43a56ba57a4df2
+    home: https://github.com/midokura/helm-charts-community/tree/main/webhook-site
+    keywords:
+    - webhook
+    - rest
+    - http
+    maintainers:
+    - name: David Girón
+      url: https://github.com/duhow
+    name: webhook-site
+    sources:
+    - https://github.com/webhooksite/webhook.site
+    type: application
+    urls:
+    - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.4/webhook-site-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
+    appVersion: "1.2"
     created: "2022-03-07T08:13:35.095719778Z"
     dependencies:
     - condition: redis.install
@@ -867,4 +1109,4 @@ entries:
     urls:
     - https://github.com/midokura/helm-charts-community/releases/download/webhook-site-0.0.1/webhook-site-0.0.1.tgz
     version: 0.0.1
-generated: "2024-05-13T12:17:55.338694167Z"
+generated: "2024-06-27T12:25:31.968227279Z"
