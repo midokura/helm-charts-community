@@ -18,6 +18,6 @@ maintainers:
   - name: David Girón
     url: https://github.com/duhow
 
-version: 0.0.2
+version: 0.0.3
 # renovate: datasource=docker depName=saltstack/salt
 appVersion: "3006.3"
