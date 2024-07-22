@@ -5,7 +5,7 @@ description: simple, fun and transparent SSH (and telnet) bastion server
 type: application
 version: 0.1.4
 # renovate: datasource=docker depName=moul/sshportal
-appVersion: 1.19.3
+appVersion: 1.19.5
 home: https://github.com/moul/sshportal
 sources:
   - https://github.com/moul/sshportal
