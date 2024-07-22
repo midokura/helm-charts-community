@@ -22,5 +22,5 @@ appVersion: 4.2.1
 dependencies:
   - name: postgresql
     repository: https://charts.bitnami.com/bitnami
-    version: 12.2.3
+    version: 12.12.10
     condition: postgresql.install
