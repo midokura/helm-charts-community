@@ -16,7 +16,7 @@ maintainers:
 
 version: 0.0.5
 # renovate: datasource=docker depName=errbotio/errbot
-appVersion: 6.1.9
+appVersion: 6.2.0
 
 dependencies:
   - name: redis
