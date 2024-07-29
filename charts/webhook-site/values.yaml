@@ -58,6 +58,7 @@ app:
     type: ClusterIP
     port: 80
 
+  additionalEnv: []
 echo:
   replicaCount: 1
   image:
