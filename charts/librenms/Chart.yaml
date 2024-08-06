@@ -16,25 +16,26 @@ maintainers:
   - name: David Girón
     url: https://github.com/duhow
 
+
 version: 0.3.2
 # renovate: datasource=docker depName=librenms/librenms
-appVersion: 22.4.1
+appVersion: 24.3.0
 
 dependencies:
   - name: mariadb
     alias: mysql
     repository: https://charts.bitnami.com/bitnami
-    version: 11.5.7
+    version: 18.0.2
     condition: mysql.install
   - name: memcached
     repository: https://charts.bitnami.com/bitnami
-    version: 6.14.0
+    version: 7.0.3
     condition: memcached.install
     tags:
       - distributed-poller
   - name: redis
     repository: https://charts.bitnami.com/bitnami
-    version: 16.13.2
+    version: 19.1.5
     condition: redis.install
     tags:
       - distributed-poller
