@@ -108,6 +108,10 @@ spec:
             timeoutSeconds: {{ .timeoutSeconds }}
           {{- end }}
           {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
           {{- if .Values.persistence.enabled }}
             - name: persistent-storage

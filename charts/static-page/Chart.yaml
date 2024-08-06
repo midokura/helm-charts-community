@@ -3,7 +3,7 @@ name: static-page
 description: Deploy a simple Docker image as static page.
 type: application
 
-version: 0.1.0
+version: 0.1.2
 
 appVersion: "0.0.0"
 

@@ -31,6 +31,23 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
+Midokura labels
+*/}}
+{{- define "charts.midokura.labels" -}}
+{{- if .Values.global }}
+
+{{- if .Values.global.team }}
+team: {{ .Values.global.team }}
+{{- end }}
+
+{{- if .Values.global.service }}
+service: {{ .Values.global.service }}
+{{- end }}
+
+{{- end }}
+{{- end }}
+
+{{/*
 Common labels
 */}}
 {{- define "librenms.base.labels" -}}
@@ -39,6 +56,7 @@ helm.sh/chart: {{ include "librenms.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{ include "charts.midokura.labels" . }}
 {{- end }}
 
 {{- define "librenms.labels" -}}

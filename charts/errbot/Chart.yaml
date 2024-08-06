@@ -14,7 +14,7 @@ maintainers:
   - name: David Girón
     url: https://github.com/duhow
 
-version: 0.0.3
+version: 0.0.5
 # renovate: datasource=docker depName=errbotio/errbot
 appVersion: 6.1.9
 
