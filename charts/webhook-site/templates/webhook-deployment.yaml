@@ -59,6 +59,10 @@ spec:
           - name: REDIS_PASSWORD
             value: {{ .Values.redis.auth.password | quote }}
           {{- end }}
+          {{- range $key, $val := .Values.app.additionalEnv }}
+          - name: {{ $key }}
+            value: {{ $val | quote }}
+          {{- end }}
           securityContext:
             {{- toYaml .Values.app.securityContext | nindent 12 }}
           {{- with .Values.app.image }}
