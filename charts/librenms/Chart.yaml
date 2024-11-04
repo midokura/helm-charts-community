@@ -24,7 +24,7 @@ dependencies:
   - name: mariadb
     alias: mysql
     repository: https://charts.bitnami.com/bitnami
-    version: 11.5.7
+    version: 19.1.2
     condition: mysql.install
   - name: memcached
     repository: https://charts.bitnami.com/bitnami
