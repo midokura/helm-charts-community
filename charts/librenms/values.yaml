@@ -137,7 +137,7 @@ smokeping:
     guest: false
   image:
     repository: linuxserver/smokeping
-    tag: "2.7.3"
+    tag: "2.9.0"
     pullPolicy: IfNotPresent
 
 mysql:
