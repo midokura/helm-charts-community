@@ -108,7 +108,7 @@ syslog:
 rrdcached:
   image:
     repository: crazymax/rrdcached
-    tag: "1.7.2-r4"
+    tag: "1.9.0-r4"
     pullPolicy: IfNotPresent
   securityContext:
     allowPrivilegeEscalation: false
