@@ -93,7 +93,7 @@ gitsync:
   enabled: false
   image:
     repository: gcr.io/k8s-staging-git-sync/git-sync
-    tag: v4.0.0
+    tag: v4.5.0
     # digest: sha256:ad48c2dd8f5ae73e783c4a55bedb4cc13d51d347d157e6564c4debfd0fbd429d
     digest: null
     pullPolicy: IfNotPresent
