@@ -25,7 +25,7 @@ api:
   devMode: false
   image:
     repository: frankescobar/allure-docker-service
-    tag: "2.19.0"
+    tag: "2.35.1"
     digest: sha256:e1db15a4f235c30c424b3bb06e3b87e7583c9606981dc9d7a2746fd4f2a3c145
     pullPolicy: IfNotPresent
   podAnnotations: {}
