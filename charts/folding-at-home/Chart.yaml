@@ -14,4 +14,4 @@ maintainers:
 
 version: 0.0.3
 # renovate: datasource=docker depName=linuxserver/foldingathome
-appVersion: 7.6.21
+appVersion: 8.5.6
