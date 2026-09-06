@@ -159,7 +159,7 @@ gitsync:
   enabled: false
   image:
     repository: gcr.io/k8s-staging-git-sync/git-sync
-    tag: v3.6.1
+    tag: v3.6.9
     # digest: sha256:7ee16e73dcc87f26f431085ed055273f166bf1c6b51f658590c4727206704374
     digest: null
     pullPolicy: IfNotPresent
